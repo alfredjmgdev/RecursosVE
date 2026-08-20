@@ -62,17 +62,17 @@ export const RealMap: React.FC<RealMapProps> = ({
 
   const stateAcopios = useMemo(() => {
     if (!selectedStateId) return customAcopios;
-    return customAcopios.filter((a) => a.estadoId === selectedStateId || (!a.estadoId && selectedStateId === 22));
+    return customAcopios.filter((a) => Number(a.estadoId) === Number(selectedStateId) || (!a.estadoId && Number(selectedStateId) === 22));
   }, [customAcopios, selectedStateId]);
 
   const stateCampamentos = useMemo(() => {
     if (!selectedStateId) return customCampamentos;
-    return customCampamentos.filter((c) => c.estadoId === selectedStateId || (!c.estadoId && selectedStateId === 22));
+    return customCampamentos.filter((c) => Number(c.estadoId) === Number(selectedStateId) || (!c.estadoId && Number(selectedStateId) === 22));
   }, [customCampamentos, selectedStateId]);
 
   const stateDesastres = useMemo(() => {
     if (!selectedStateId) return customDesastres;
-    return customDesastres.filter((d) => d.estadoId === selectedStateId || (!d.estadoId && selectedStateId === 22));
+    return customDesastres.filter((d) => Number(d.estadoId) === Number(selectedStateId) || (!d.estadoId && Number(selectedStateId) === 22));
   }, [customDesastres, selectedStateId]);
 
   const availableDisasterTypes = useMemo(() => {
@@ -349,13 +349,14 @@ export const RealMap: React.FC<RealMapProps> = ({
     desastresToRender.forEach((dz) => {
       const theme = getDisasterTheme(dz.tipo);
 
-      // 1. Draw Impact Radius Circle
+      // 1. Draw Impact Radius Circle (Minimum 12km radius for high-level visibility on state maps)
+      const displayRadius = Math.max(dz.radioMetros || 3500, 12000);
       const circle = L.circle([dz.lat, dz.lng], {
-        radius: dz.radioMetros,
+        radius: displayRadius,
         color: theme.color,
         fillColor: theme.fillColor,
-        fillOpacity: 0.18,
-        weight: 2,
+        fillOpacity: 0.35,
+        weight: 3,
         dashArray: '6, 6',
         interactive: true,
       });
@@ -378,6 +379,7 @@ export const RealMap: React.FC<RealMapProps> = ({
       // 2. Draw Marker in center of disaster
       const dzMarker = L.marker([dz.lat, dz.lng], {
         icon: createCategoryIcon(theme.color, dz.nombre, `ZONA DE IMPACTO (${theme.icon})`, theme.icon),
+        zIndexOffset: 2000,
       });
 
       if (isSelectingLocation && onSelectLocation) {
