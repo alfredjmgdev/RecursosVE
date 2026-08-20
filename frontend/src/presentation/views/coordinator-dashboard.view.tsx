@@ -27,6 +27,7 @@ import {
   X,
   Calendar,
   Clock,
+  Navigation,
 } from 'lucide-react';
 import { ActionPlanType, GapAnalysisResult } from '../../domain/entities/gap-analysis.entity';
 import { ReportStatus } from '../../domain/entities/report.entity';
@@ -43,6 +44,11 @@ const RealMap = dynamic(
       </div>
     ),
   },
+);
+
+const RouteMapModal = dynamic(
+  () => import('../components/route-map-modal.component').then((mod) => mod.RouteMapModal),
+  { ssr: false }
 );
 
 const ITEMS_PER_PAGE = 8;
@@ -114,6 +120,7 @@ export const CoordinatorDashboardView: React.FC<CoordinatorDashboardViewProps> =
   // Modal & Map Location Picker State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isManageModalOpen, setIsManageModalOpen] = useState(false);
+  const [isRouteModalOpen, setIsRouteModalOpen] = useState(false);
   const [isSelectingLocation, setIsSelectingLocation] = useState(false);
   const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null);
 
@@ -234,6 +241,12 @@ export const CoordinatorDashboardView: React.FC<CoordinatorDashboardViewProps> =
         onEnableMapPicker={handleEnableMapPicker}
       />
 
+      {/* Route Map Modal for Agente 3 */}
+      <RouteMapModal
+        isOpen={isRouteModalOpen}
+        onClose={() => setIsRouteModalOpen(false)}
+      />
+
       {/* Infrastructure Management (Edit/Delete) Modal */}
       <ManageInfrastructureListModal
         isOpen={isManageModalOpen}
@@ -286,6 +299,14 @@ export const CoordinatorDashboardView: React.FC<CoordinatorDashboardViewProps> =
 
           {/* Right Column: Action Buttons */}
           <div className="relative z-10 flex flex-wrap items-center gap-3 shrink-0">
+            <button
+              onClick={() => setIsRouteModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-3 bg-cyan-950/80 hover:bg-cyan-900 text-cyan-200 rounded-2xl font-black text-xs shadow-md transition-all border border-cyan-700/50 cursor-pointer"
+            >
+              <Navigation className="w-4 h-4 text-cyan-400 animate-pulse" />
+              <span>🛣️ Agente 3: Ruteo Logístico</span>
+            </button>
+
             <button
               onClick={() => setIsManageModalOpen(true)}
               className="flex items-center gap-2 px-4 py-3 bg-white hover:bg-slate-50 text-slate-800 rounded-2xl font-black text-xs shadow-sm hover:shadow-md transition-all border-2 border-slate-200 hover:border-slate-300 cursor-pointer"

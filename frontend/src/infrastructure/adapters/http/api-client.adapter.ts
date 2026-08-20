@@ -9,6 +9,8 @@ import {
   DisasterTypeFrontend,
   DonationFrontend,
   NlpExtractedEntityFrontend,
+  CalculateRoutePayloadFrontend,
+  RouteCalculationFrontend,
 } from '../../../domain/ports/api-client.port';
 import { GapAnalysisResult, ActionPlanType } from '../../../domain/entities/gap-analysis.entity';
 import { NeedReport, ReportStatus, ResourceCategory } from '../../../domain/entities/report.entity';
@@ -751,6 +753,43 @@ export class ApiClientAdapter implements ApiClientPort {
       estadoNombre: 'La Guaira',
       rawText: text,
       source: 'HEURISTIC_FALLBACK',
+    };
+  }
+
+  async calculateRoute(payload: CalculateRoutePayloadFrontend): Promise<RouteCalculationFrontend> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/routes/calculate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // Fallback
+    }
+
+    // Fallback calculation in case backend is unreachable
+    const dx = (payload.destino.lng - payload.origen.lng) * 111.32;
+    const dy = (payload.destino.lat - payload.origen.lat) * 110.57;
+    const directKm = Math.sqrt(dx * dx + dy * dy);
+    const distanciaKm = Math.round(directKm * 1.35 * 10) / 10;
+    const tiempoEstimadoMinutos = Math.round((distanciaKm / 60) * 60);
+
+    return {
+      distanciaKm,
+      tiempoEstimadoMinutos,
+      nivelRiesgo: distanciaKm > 100 ? 'MEDIO' : 'BAJO',
+      tipoVehiculoRecomendado: payload.tipoVehiculo || 'CAMION_350',
+      alertasViales: ['Ruta calculada con soporte offline / local'],
+      waypoints: [
+        { lat: payload.origen.lat, lng: payload.origen.lng, instruccion: `Origen: ${payload.origen.nombre || 'Centro de Acopio'}` },
+        { lat: payload.destino.lat, lng: payload.destino.lng, instruccion: `Destino: ${payload.destino.nombre || 'Campamento de Refugio'}` },
+      ],
+      origen: payload.origen,
+      destino: payload.destino,
+      calculadoEn: new Date().toISOString(),
     };
   }
 }

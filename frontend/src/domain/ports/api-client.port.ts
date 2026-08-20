@@ -130,6 +130,37 @@ export interface NlpExtractedEntityFrontend {
   source: 'OLLAMA_QWEN2.5' | 'HEURISTIC_FALLBACK';
 }
 
+export interface RouteWaypointFrontend {
+  lat: number;
+  lng: number;
+  instruccion?: string;
+}
+
+export interface RoutePointFrontend {
+  lat: number;
+  lng: number;
+  nombre?: string;
+}
+
+export interface CalculateRoutePayloadFrontend {
+  origen: RoutePointFrontend;
+  destino: RoutePointFrontend;
+  tipoVehiculo?: string;
+  evitarZonasPeligro?: boolean;
+}
+
+export interface RouteCalculationFrontend {
+  distanciaKm: number;
+  tiempoEstimadoMinutos: number;
+  nivelRiesgo: 'BAJO' | 'MEDIO' | 'ALTO' | 'CRITICO';
+  tipoVehiculoRecomendado: string;
+  alertasViales: string[];
+  waypoints: RouteWaypointFrontend[];
+  origen: RoutePointFrontend;
+  destino: RoutePointFrontend;
+  calculadoEn: string;
+}
+
 export interface ApiClientPort {
   login(email: string, password: string): Promise<AuthResultFrontend>;
   getGapAnalysis(): Promise<GapAnalysisResult[]>;
@@ -139,6 +170,7 @@ export interface ApiClientPort {
   offerDonation(payload: OfferDonationPayload): Promise<MatchResultFrontend>;
   getDonations(): Promise<DonationFrontend[]>;
   processNlpReport(text: string): Promise<NlpExtractedEntityFrontend>;
+  calculateRoute(payload: CalculateRoutePayloadFrontend): Promise<RouteCalculationFrontend>;
 
   getDisasters(): Promise<InfrastructureDesastre[]>;
   createDisaster(payload: Omit<InfrastructureDesastre, 'id'>): Promise<InfrastructureDesastre>;
