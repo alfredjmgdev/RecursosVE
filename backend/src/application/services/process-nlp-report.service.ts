@@ -32,7 +32,7 @@ Mensaje de emergencia a analizar:
     for (const url of this.ollamaUrls) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
 
         const response = await fetch(`${url}/api/generate`, {
           method: 'POST',
