@@ -211,7 +211,7 @@ async function seed() {
         const itemList = itemsMap[cat];
         const item = itemList[r % itemList.length];
         const cantReq = 50 + (st.id * 10) + (r * 25);
-        const status = r === 1 ? 'SIN_COBERTURA' : (r === 2 ? 'COBERTURA_PARCIAL' : 'SIN_COBERTURA');
+        const status = r === 1 ? 'SIN_COBERTURA' : (r === 2 ? 'PARCIAL' : 'SIN_COBERTURA');
         const horasSin = 12 + (r * 8) + (st.id % 24);
 
         const zonaJson = {
