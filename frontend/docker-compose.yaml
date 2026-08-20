@@ -1,0 +1,26 @@
+version: "3.8"
+networks:
+  default:
+    name: dev
+    external: true
+services:
+  frontend-recursosve:
+    image: alfredjmgdev/frontend-recursosve:latest
+    container_name: frontend-recursosve
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend-recursosve.entrypoints=http"
+      - "traefik.http.routers.frontend-recursosve.rule=Host(`recursos-ve.alfredjmg.dev`)"
+      - "traefik.http.middlewares.frontend-recursosve-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.frontend-recursosve.middlewares=frontend-recursosve-https-redirect"
+      - "traefik.http.routers.frontend-recursosve-secure.entrypoints=https"
+      - "traefik.http.routers.frontend-recursosve-secure.rule=Host(`recursos-ve.alfredjmg.dev`)"
+      - "traefik.http.routers.frontend-recursosve-secure.tls=true"
+      - "traefik.http.routers.frontend-recursosve-secure.service=frontend-recursosve"
+      - "traefik.http.services.frontend-recursosve.loadbalancer.server.port=3000"
+      - "traefik.docker.network=dev"

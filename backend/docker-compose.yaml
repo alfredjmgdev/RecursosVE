@@ -1,0 +1,15 @@
+version: "3.8"
+networks:
+  default:
+    name: dev
+    external: true
+services:
+  backend-recursosve:
+    image: alfredjmgdev/backend-recursosve:latest
+    container_name: backend-recursosve
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
