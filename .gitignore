@@ -5,6 +5,10 @@ dist/
 /out/
 build/
 
+# Generated Documents
+*.docx
+*.pdf
+
 # Environment files
 .env
 .env.*
