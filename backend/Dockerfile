@@ -24,6 +24,7 @@ RUN npm config set registry https://registry.npmjs.org/ && \
     npm install --only=production
 
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/seeds ./seeds
 
 EXPOSE 3001
 
