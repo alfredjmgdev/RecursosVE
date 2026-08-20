@@ -37,6 +37,7 @@ import { REGISTER_INVENTORY_USE_CASE } from './domain/ports/in/register-inventor
 import { OFFER_DONATION_USE_CASE } from './domain/ports/in/offer-donation.use-case';
 import { LOGIN_USE_CASE } from './domain/ports/in/login.use-case';
 import { MANAGE_INFRASTRUCTURE_USE_CASE } from './domain/ports/in/manage-infrastructure.use-case';
+import { PROCESS_NLP_REPORT_USE_CASE } from './domain/ports/in/process-nlp-report.use-case';
 
 import { CreateReportService } from './application/services/create-report.service';
 import { GetActiveReportsService } from './application/services/get-active-reports.service';
@@ -47,6 +48,7 @@ import { RegisterInventoryService } from './application/services/register-invent
 import { OfferDonationService } from './application/services/offer-donation.service';
 import { LoginService } from './application/services/login.service';
 import { ManageInfrastructureService } from './application/services/manage-infrastructure.service';
+import { ProcessNlpReportService } from './application/services/process-nlp-report.service';
 
 import { ReportsController } from './infrastructure/adapters/in/http/reports.controller';
 import { AnalyticsController } from './infrastructure/adapters/in/http/analytics.controller';
@@ -169,6 +171,10 @@ const ORM_ENTITIES = [
     {
       provide: MANAGE_INFRASTRUCTURE_USE_CASE,
       useClass: ManageInfrastructureService,
+    },
+    {
+      provide: PROCESS_NLP_REPORT_USE_CASE,
+      useClass: ProcessNlpReportService,
     },
   ],
 })

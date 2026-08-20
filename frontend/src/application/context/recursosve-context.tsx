@@ -70,6 +70,7 @@ interface RecursosVEContextType {
   createReport: (payload: CreateReportPayload) => Promise<NeedReport>;
   updateReportStatus: (id: string, status: ReportStatus) => Promise<void>;
   offerDonation: (payload: OfferDonationPayload) => Promise<MatchResultFrontend>;
+  processNlpReport: (text: string) => Promise<import('../../domain/ports/api-client.port').NlpExtractedEntityFrontend>;
 
   // Custom Infrastructure & Disaster State
   customAcopios: CustomAcopio[];
@@ -271,6 +272,7 @@ export const RecursosVEProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         createReport,
         updateReportStatus,
         offerDonation,
+        processNlpReport: (text: string) => apiClient.processNlpReport(text),
         customAcopios,
         customCampamentos,
         customDesastres,

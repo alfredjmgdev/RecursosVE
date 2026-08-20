@@ -113,6 +113,23 @@ export interface DonationFrontend {
   createdAt: string;
 }
 
+export interface NlpExtractedEntityFrontend {
+  categoria: string;
+  item: string;
+  cantidadRequerida: number;
+  unidad: string;
+  poblacionVulnerable: boolean;
+  horasSinCobertura: number;
+  campamento: string;
+  estadoNombre: string;
+  estadoId?: number;
+  lat?: number;
+  lng?: number;
+  rawText: string;
+  rawNlpResponse?: string;
+  source: 'OLLAMA_QWEN2.5' | 'HEURISTIC_FALLBACK';
+}
+
 export interface ApiClientPort {
   login(email: string, password: string): Promise<AuthResultFrontend>;
   getGapAnalysis(): Promise<GapAnalysisResult[]>;
@@ -121,6 +138,7 @@ export interface ApiClientPort {
   getLearningMetrics(): Promise<LearningMetricsSummary>;
   offerDonation(payload: OfferDonationPayload): Promise<MatchResultFrontend>;
   getDonations(): Promise<DonationFrontend[]>;
+  processNlpReport(text: string): Promise<NlpExtractedEntityFrontend>;
 
   getDisasters(): Promise<InfrastructureDesastre[]>;
   createDisaster(payload: Omit<InfrastructureDesastre, 'id'>): Promise<InfrastructureDesastre>;

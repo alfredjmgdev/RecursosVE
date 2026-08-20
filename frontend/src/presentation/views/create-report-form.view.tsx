@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react';
 import { useRecursosVE } from '../../application/context/recursosve-context';
 import { UserRole } from '../../domain/entities/user.entity';
 import { ResourceCategory } from '../../domain/entities/report.entity';
-import { Send, CheckCircle2, AlertTriangle, MapPin, HelpCircle, Info, PlusCircle } from 'lucide-react';
+import { Send, CheckCircle2, AlertTriangle, MapPin, HelpCircle, Info, PlusCircle, Sparkles, Bot, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FALLBACK_VENEZUELA_STATES } from '../../domain/entities/venezuela-states.data';
@@ -14,7 +14,7 @@ interface CreateReportFormViewProps {
 }
 
 export const CreateReportFormView: React.FC<CreateReportFormViewProps> = ({ stateCodeParam }) => {
-  const { createReport, customCampamentos, customAcopios, selectedStateId, setSelectedStateId, venezuelaStates, currentUser } = useRecursosVE();
+  const { createReport, customCampamentos, customAcopios, selectedStateId, setSelectedStateId, venezuelaStates, currentUser, processNlpReport } = useRecursosVE();
   const router = useRouter();
 
   // RBAC Guard: DONANTE cannot create report needs
@@ -62,10 +62,37 @@ export const CreateReportFormView: React.FC<CreateReportFormViewProps> = ({ stat
     return stateCampamentos.length === 0 && stateAcopios.length === 0;
   }, [stateCampamentos, stateAcopios]);
 
+  const [inputMode, setInputMode] = useState<'NLP' | 'MANUAL'>('NLP');
+  const [nlpText, setNlpText] = useState(
+    'Urgente en Campamento La Guaira: requerimos 50 cajas de agua potable y 30 dosis de insulina rápida para 5 niños y ancianos afectados'
+  );
+  const [isAnalyzingNlp, setIsAnalyzingNlp] = useState(false);
+  const [nlpSource, setNlpSource] = useState<string | null>(null);
+
   const [categoria, setCategoria] = useState<ResourceCategory>(ResourceCategory.MEDICAMENTO);
   const [item, setItem] = useState('Insulina rápida');
   const [cantidadRequerida, setCantidadRequerida] = useState(80);
   const [unidad, setUnidad] = useState('dosis');
+
+  const handleAnalyzeNlp = async () => {
+    if (!nlpText.trim()) return;
+    setIsAnalyzingNlp(true);
+    setNlpSource(null);
+    try {
+      const result = await processNlpReport(nlpText);
+      setCategoria(result.categoria as ResourceCategory);
+      setItem(result.item);
+      setCantidadRequerida(result.cantidadRequerida);
+      setUnidad(result.unidad);
+      setPoblacionVulnerable(result.poblacionVulnerable);
+      setHorasSinCobertura(result.horasSinCobertura);
+      setNlpSource(result.source);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsAnalyzingNlp(false);
+    }
+  };
   
   // Infrastructure Selection State
   const [selectedInfraId, setSelectedInfraId] = useState<string>('');
@@ -195,6 +222,81 @@ export const CreateReportFormView: React.FC<CreateReportFormViewProps> = ({ stat
           <div className="mb-6 p-4 bg-emerald-50 border border-emerald-300 rounded-2xl text-emerald-800 text-xs md:text-sm font-bold flex items-center gap-2.5 animate-fadeIn shadow-md">
             <CheckCircle2 className="w-5 h-5 text-emerald-600" />
             ¡Reporte creado exitosamente! Calculando Score de Criticidad...
+          </div>
+        )}
+
+        {/* Selector de Modo: Agente 1 (IA NLP) vs Manual */}
+        <div className="mb-6 flex p-1.5 bg-slate-100 rounded-2xl border border-slate-200 gap-1.5">
+          <button
+            type="button"
+            onClick={() => setInputMode('NLP')}
+            className={`flex-1 py-2.5 px-4 rounded-xl text-xs md:text-sm font-black flex items-center justify-center gap-2 transition-all ${
+              inputMode === 'NLP'
+                ? 'bg-gradient-to-r from-red-600 to-amber-600 text-white shadow-md'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+            }`}
+          >
+            <Bot className="w-4 h-4" />
+            🤖 Agente 1: Captura NLP (IA Ollama Local)
+          </button>
+          <button
+            type="button"
+            onClick={() => setInputMode('MANUAL')}
+            className={`flex-1 py-2.5 px-4 rounded-xl text-xs md:text-sm font-black flex items-center justify-center gap-2 transition-all ${
+              inputMode === 'MANUAL'
+                ? 'bg-slate-900 text-white shadow-md'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+            }`}
+          >
+            <FileText className="w-4 h-4" />
+            Formulario Estructurado (Manual)
+          </button>
+        </div>
+
+        {/* Sección de Entradas del Agente 1 (NLP) */}
+        {inputMode === 'NLP' && (
+          <div className="mb-6 p-5 bg-gradient-to-br from-amber-50/80 to-red-50/50 border border-amber-200 rounded-2xl space-y-3.5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-black uppercase tracking-wider text-amber-900 flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-600 animate-pulse" />
+                Agente 1: Procesar Texto Informal de Emergencia (Qwen2.5 local)
+              </label>
+              {nlpSource && (
+                <span className="text-[10px] font-black px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  ✓ {nlpSource === 'OLLAMA_QWEN2.5' ? 'Extraído por Ollama (VPS)' : 'Extraído por Heurística Fallback'}
+                </span>
+              )}
+            </div>
+            <textarea
+              rows={3}
+              value={nlpText}
+              onChange={(e) => setNlpText(e.target.value)}
+              placeholder="Escribí o pegá un mensaje informal de WhatsApp o radio de emergencia..."
+              className="w-full bg-white border border-amber-300 rounded-xl p-3.5 text-xs md:text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
+            />
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[11px] text-amber-800/80 font-medium">
+                💡 El Agente 1 analizará el texto, extraerá el insumo, la cantidad, la categoría y la población vulnerable automáticamente.
+              </p>
+              <button
+                type="button"
+                onClick={handleAnalyzeNlp}
+                disabled={isAnalyzingNlp || !nlpText.trim()}
+                className="bg-amber-600 hover:bg-amber-700 active:scale-98 text-white px-4 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 transition-all shadow-md shrink-0 disabled:opacity-50"
+              >
+                {isAnalyzingNlp ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Analizando con Ollama...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    Procesar con Agente 1 (NLP)
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         )}
 

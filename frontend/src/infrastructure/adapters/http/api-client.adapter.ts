@@ -8,6 +8,7 @@ import {
   InfrastructureDesastre,
   DisasterTypeFrontend,
   DonationFrontend,
+  NlpExtractedEntityFrontend,
 } from '../../../domain/ports/api-client.port';
 import { GapAnalysisResult, ActionPlanType } from '../../../domain/entities/gap-analysis.entity';
 import { NeedReport, ReportStatus, ResourceCategory } from '../../../domain/entities/report.entity';
@@ -701,5 +702,55 @@ export class ApiClientAdapter implements ApiClientPort {
         },
       },
     ];
+  }
+
+  async processNlpReport(text: string): Promise<NlpExtractedEntityFrontend> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/reports/nlp-process`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // Fallback
+    }
+
+    const lower = text.toLowerCase();
+    let categoria = 'OTRO';
+    let item = 'Insumo de Emergencia';
+    let unidad = 'unidades';
+
+    if (lower.includes('agua') || lower.includes('potable') || lower.includes('litro')) {
+      categoria = 'AGUA';
+      item = 'Agua Potable 5L';
+      unidad = 'litros';
+    } else if (lower.includes('insulina') || lower.includes('medicina') || lower.includes('dosis')) {
+      categoria = 'MEDICAMENTO';
+      item = 'Insulina Rápida / Medicinas';
+      unidad = 'dosis';
+    } else if (lower.includes('comida') || lower.includes('arroz')) {
+      categoria = 'ALIMENTO';
+      item = 'Alimentos No Perecederos';
+      unidad = 'kg';
+    }
+
+    const matchNumber = text.match(/\b\d+\b/);
+    const cantidadRequerida = matchNumber ? parseInt(matchNumber[0], 10) : 50;
+
+    return {
+      categoria,
+      item,
+      cantidadRequerida,
+      unidad,
+      poblacionVulnerable: lower.includes('niño') || lower.includes('bebé') || lower.includes('herido') || lower.includes('anciano'),
+      horasSinCobertura: 24,
+      campamento: 'Campamento La Guaira #12',
+      estadoNombre: 'La Guaira',
+      rawText: text,
+      source: 'HEURISTIC_FALLBACK',
+    };
   }
 }
