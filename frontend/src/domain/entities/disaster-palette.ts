@@ -120,8 +120,9 @@ export const DISASTER_THEMES: Record<string, DisasterTheme> = {
 };
 
 export function getDisasterTheme(tipo: string): DisasterTheme {
+  const normalizedKey = (tipo || '').toUpperCase().trim();
   return (
-    DISASTER_THEMES[tipo] || {
+    DISASTER_THEMES[normalizedKey] || {
       tipo,
       label: tipo,
       color: '#dc2626',

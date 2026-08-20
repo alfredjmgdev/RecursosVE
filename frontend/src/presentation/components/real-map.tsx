@@ -76,8 +76,10 @@ export const RealMap: React.FC<RealMapProps> = ({
   }, [customDesastres, selectedStateId]);
 
   const availableDisasterTypes = useMemo(() => {
-    return Array.from(new Set(stateDesastres.map((d) => d.tipo)));
+    return Array.from(new Set(stateDesastres.map((d) => (d.tipo || '').toUpperCase())));
   }, [stateDesastres]);
+
+  const availableTypesKey = useMemo(() => availableDisasterTypes.slice().sort().join(','), [availableDisasterTypes]);
 
   // Auto-select all available disaster types on initial data load / state change
   useEffect(() => {
@@ -86,19 +88,21 @@ export const RealMap: React.FC<RealMapProps> = ({
     } else {
       setSelectedDisasterTypes([]);
     }
-  }, [availableDisasterTypes]);
+  }, [availableTypesKey]);
 
   const disasterCountsByType = useMemo(() => {
     const counts: Record<string, number> = {};
     stateDesastres.forEach((d) => {
-      counts[d.tipo] = (counts[d.tipo] || 0) + 1;
+      const t = (d.tipo || '').toUpperCase();
+      counts[t] = (counts[t] || 0) + 1;
     });
     return counts;
   }, [stateDesastres]);
 
   const toggleDisasterType = (tipo: string) => {
+    const norm = (tipo || '').toUpperCase();
     setSelectedDisasterTypes((prev) =>
-      prev.includes(tipo) ? prev.filter((t) => t !== tipo) : [...prev, tipo]
+      prev.includes(norm) ? prev.filter((t) => t !== norm) : [...prev, norm]
     );
   };
 
@@ -339,7 +343,7 @@ export const RealMap: React.FC<RealMapProps> = ({
     // Render Custom Desastres based on selectedDisasterTypes multi-select
     customDesastresGroupRef.current.clearLayers();
     const desastresToRender = stateDesastres.filter((dz) =>
-      selectedDisasterTypes.includes(dz.tipo)
+      selectedDisasterTypes.includes((dz.tipo || '').toUpperCase())
     );
 
     desastresToRender.forEach((dz) => {
