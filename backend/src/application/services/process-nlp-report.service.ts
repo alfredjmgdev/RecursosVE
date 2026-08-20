@@ -31,9 +31,13 @@ Mensaje de emergencia a analizar:
 
     for (const url of this.ollamaUrls) {
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
         const response = await fetch(`${url}/api/generate`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
           body: JSON.stringify({
             model: process.env.OLLAMA_MODEL || 'qwen2.5:1.5b',
             prompt,
@@ -43,6 +47,7 @@ Mensaje de emergencia a analizar:
             },
           }),
         });
+        clearTimeout(timeoutId);
 
         if (response.ok) {
           const data = (await response.json()) as { response?: string };
