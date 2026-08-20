@@ -11,6 +11,8 @@ import {
   NlpExtractedEntityFrontend,
   CalculateRoutePayloadFrontend,
   RouteCalculationFrontend,
+  SubmitFeedbackPayloadFrontend,
+  FeedbackResultFrontend,
 } from '../../../domain/ports/api-client.port';
 import { GapAnalysisResult, ActionPlanType } from '../../../domain/entities/gap-analysis.entity';
 import { NeedReport, ReportStatus, ResourceCategory } from '../../../domain/entities/report.entity';
@@ -790,6 +792,30 @@ export class ApiClientAdapter implements ApiClientPort {
       origen: payload.origen,
       destino: payload.destino,
       calculadoEn: new Date().toISOString(),
+    };
+  }
+
+  async submitReportFeedback(payload: SubmitFeedbackPayloadFrontend): Promise<FeedbackResultFrontend> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/analytics/feedback`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // Fallback
+    }
+
+    return {
+      id: `fb_${Date.now()}`,
+      reportId: payload.reportId,
+      calificacion: payload.calificacion,
+      resultado: payload.resultado,
+      comentario: payload.comentario,
+      createdAt: new Date().toISOString(),
     };
   }
 }

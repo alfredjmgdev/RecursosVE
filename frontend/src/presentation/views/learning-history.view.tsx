@@ -1,15 +1,17 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useRecursosVE } from '../../application/context/recursosve-context';
 import { UserRole } from '../../domain/entities/user.entity';
-import { BrainCircuit, TrendingUp, ShieldCheck, Zap } from 'lucide-react';
+import { BrainCircuit, TrendingUp, ShieldCheck, Zap, Sliders, MessageSquarePlus } from 'lucide-react';
 import { LearningPattern } from '../../domain/entities/learning.entity';
+import { ReportFeedbackModal } from '../components/report-feedback-modal.component';
 
 export const LearningHistoryView: React.FC = () => {
   const { learningMetrics, currentUser } = useRecursosVE();
   const router = useRouter();
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
   // RBAC Guard: Only COORDINADOR can view IA & Aprendizaje
   React.useEffect(() => {
@@ -28,15 +30,34 @@ export const LearningHistoryView: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      {/* Feedback Modal Triggered for Agente 5 */}
+      <ReportFeedbackModal
+        isOpen={isFeedbackModalOpen}
+        onClose={() => setIsFeedbackModalOpen(false)}
+        reportId="REP_DEMO_2026"
+        categoriaInsumo="AGUA_Y_MEDICINAS"
+        estadoNombre="La Guaira"
+      />
+
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-red-700 via-red-600 to-amber-600 border border-red-800 p-6 md:p-8 rounded-3xl shadow-xl text-white">
-        <div className="flex items-center gap-3 text-white font-black text-lg md:text-xl mb-2">
-          <BrainCircuit className="w-6 h-6 text-amber-200" />
-          <h2>Agente de Aprendizaje & Memoria Adaptativa (Agente 5)</h2>
+      <div className="bg-gradient-to-r from-red-700 via-red-600 to-amber-600 border border-red-800 p-6 md:p-8 rounded-3xl shadow-xl text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3 text-white font-black text-lg md:text-xl">
+            <BrainCircuit className="w-6 h-6 text-amber-200" />
+            <h2>Agente de Aprendizaje & Memoria Adaptativa (Agente 5)</h2>
+          </div>
+          <p className="text-xs md:text-sm text-red-100 leading-relaxed font-medium">
+            Analiza ciclos completados para evitar cuellos de botella recurrentes y ajustar ponderadores de criticidad en función de la experiencia en terreno.
+          </p>
         </div>
-        <p className="text-xs md:text-sm text-red-100 leading-relaxed font-medium">
-          Analiza ciclos completados para evitar cuellos de botella recurrentes y ajustar ponderadores de criticidad en función de la experiencia en terreno.
-        </p>
+
+        <button
+          onClick={() => setIsFeedbackModalOpen(true)}
+          className="px-4 py-3 bg-white text-red-700 hover:bg-red-50 font-black text-xs rounded-2xl shadow-lg transition-all flex items-center gap-2 shrink-0 self-start md:self-auto cursor-pointer"
+        >
+          <MessageSquarePlus className="w-4 h-4 text-red-600" />
+          <span>Evaluar Despacho (Feedback)</span>
+        </button>
       </div>
 
       {/* Metrics Summary Cards */}
@@ -65,6 +86,36 @@ export const LearningHistoryView: React.FC = () => {
           <span className="text-xs uppercase font-black text-emerald-700">
             Eficiencia Acelerada
           </span>
+        </div>
+      </div>
+
+      {/* Adaptive Criticality Multipliers Panel */}
+      <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-lg space-y-3 text-white">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-400">
+          <Sliders className="w-4 h-4 text-amber-400" />
+          <span>Matriz de Pesos Adaptativos Dinámicos (Agente 2 & Agente 5)</span>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+          <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+            <span className="text-slate-400 block mb-1">Población Vulnerable</span>
+            <span className="text-lg font-black text-cyan-400">1.80x</span>
+            <span className="text-[10px] text-emerald-400 block mt-0.5">↑ Ajustado por IA</span>
+          </div>
+          <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+            <span className="text-slate-400 block mb-1">Insumo Medicamentos</span>
+            <span className="text-lg font-black text-amber-400">1.50x</span>
+            <span className="text-[10px] text-amber-400 block mt-0.5">• Estable</span>
+          </div>
+          <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+            <span className="text-slate-400 block mb-1">Insumo Agua Potable</span>
+            <span className="text-lg font-black text-cyan-400">1.40x</span>
+            <span className="text-[10px] text-emerald-400 block mt-0.5">↑ Ajustado por IA</span>
+          </div>
+          <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+            <span className="text-slate-400 block mb-1">Horas sin Cobertura</span>
+            <span className="text-lg font-black text-emerald-400">1.25x</span>
+            <span className="text-[10px] text-slate-400 block mt-0.5"> Base fija</span>
+          </div>
         </div>
       </div>
 

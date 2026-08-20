@@ -161,6 +161,24 @@ export interface RouteCalculationFrontend {
   calculadoEn: string;
 }
 
+export interface SubmitFeedbackPayloadFrontend {
+  reportId: string;
+  calificacion: number;
+  resultado: 'EXITOSO' | 'DEMANDA_SUBESTIMADA' | 'RETRASO_LOGISTICO' | 'RECURSO_EQUIVOCADO';
+  comentario?: string;
+  categoriaInsumo?: string;
+  estadoNombre?: string;
+}
+
+export interface FeedbackResultFrontend {
+  id: string;
+  reportId: string;
+  calificacion: number;
+  resultado: string;
+  comentario?: string;
+  createdAt: string;
+}
+
 export interface ApiClientPort {
   login(email: string, password: string): Promise<AuthResultFrontend>;
   getGapAnalysis(): Promise<GapAnalysisResult[]>;
@@ -171,6 +189,7 @@ export interface ApiClientPort {
   getDonations(): Promise<DonationFrontend[]>;
   processNlpReport(text: string): Promise<NlpExtractedEntityFrontend>;
   calculateRoute(payload: CalculateRoutePayloadFrontend): Promise<RouteCalculationFrontend>;
+  submitReportFeedback(payload: SubmitFeedbackPayloadFrontend): Promise<FeedbackResultFrontend>;
 
   getDisasters(): Promise<InfrastructureDesastre[]>;
   createDisaster(payload: Omit<InfrastructureDesastre, 'id'>): Promise<InfrastructureDesastre>;

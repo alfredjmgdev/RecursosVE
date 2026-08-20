@@ -72,6 +72,7 @@ interface RecursosVEContextType {
   offerDonation: (payload: OfferDonationPayload) => Promise<MatchResultFrontend>;
   processNlpReport: (text: string) => Promise<import('../../domain/ports/api-client.port').NlpExtractedEntityFrontend>;
   calculateRoute: (payload: import('../../domain/ports/api-client.port').CalculateRoutePayloadFrontend) => Promise<import('../../domain/ports/api-client.port').RouteCalculationFrontend>;
+  submitReportFeedback: (payload: import('../../domain/ports/api-client.port').SubmitFeedbackPayloadFrontend) => Promise<import('../../domain/ports/api-client.port').FeedbackResultFrontend>;
 
   // Custom Infrastructure & Disaster State
   customAcopios: CustomAcopio[];
@@ -275,6 +276,11 @@ export const RecursosVEProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         offerDonation,
         processNlpReport: (text: string) => apiClient.processNlpReport(text),
         calculateRoute: (payload) => apiClient.calculateRoute(payload),
+        submitReportFeedback: async (payload) => {
+          const res = await apiClient.submitReportFeedback(payload);
+          await refreshData(true);
+          return res;
+        },
         customAcopios,
         customCampamentos,
         customDesastres,
