@@ -17,3 +17,14 @@ services:
       - .env
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend-recursosve.entrypoints=http"
+      - "traefik.http.routers.backend-recursosve.rule=Host(`recursos-ve.alfredjmg.dev`) && PathPrefix(`/api`)"
+      - "traefik.http.middlewares.backend-recursosve-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.backend-recursosve.middlewares=backend-recursosve-https-redirect"
+      - "traefik.http.routers.backend-recursosve-secure.entrypoints=https"
+      - "traefik.http.routers.backend-recursosve-secure.rule=Host(`recursos-ve.alfredjmg.dev`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-recursosve-secure.tls=true"
+      - "traefik.http.routers.backend-recursosve-secure.service=backend-recursosve"
+      - "traefik.http.services.backend-recursosve.loadbalancer.server.port=3001"
+      - "traefik.docker.network=dev"
