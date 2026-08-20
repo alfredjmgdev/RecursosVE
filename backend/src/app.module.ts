@@ -7,6 +7,7 @@ import { RefugeeCampOrmEntity } from './infrastructure/adapters/out/persistence/
 import { CollectionCenterOrmEntity } from './infrastructure/adapters/out/persistence/postgres/entities/collection-center.orm-entity';
 import { DisasterTypeOrmEntity } from './infrastructure/adapters/out/persistence/postgres/entities/disaster-type.orm-entity';
 import { VenezuelaStateOrmEntity } from './infrastructure/adapters/out/persistence/postgres/entities/venezuela-state.orm-entity';
+import { ReportFeedbackOrmEntity } from './infrastructure/adapters/out/persistence/postgres/entities/report-feedback.orm-entity';
 
 import { ReportPostgresRepository } from './infrastructure/adapters/out/persistence/postgres/repositories/report.postgres-repository';
 import { InventoryPostgresRepository } from './infrastructure/adapters/out/persistence/postgres/repositories/inventory.postgres-repository';
@@ -39,6 +40,7 @@ import { LOGIN_USE_CASE } from './domain/ports/in/login.use-case';
 import { MANAGE_INFRASTRUCTURE_USE_CASE } from './domain/ports/in/manage-infrastructure.use-case';
 import { PROCESS_NLP_REPORT_USE_CASE } from './domain/ports/in/process-nlp-report.use-case';
 import { CALCULATE_OPTIMAL_ROUTE_USE_CASE } from './domain/ports/in/calculate-optimal-route.use-case';
+import { SUBMIT_FEEDBACK_USE_CASE } from './domain/ports/in/submit-feedback.use-case';
 
 import { CreateReportService } from './application/services/create-report.service';
 import { GetActiveReportsService } from './application/services/get-active-reports.service';
@@ -51,6 +53,7 @@ import { LoginService } from './application/services/login.service';
 import { ManageInfrastructureService } from './application/services/manage-infrastructure.service';
 import { ProcessNlpReportService } from './application/services/process-nlp-report.service';
 import { CalculateOptimalRouteService } from './application/services/calculate-optimal-route.service';
+import { SubmitFeedbackService } from './application/services/submit-feedback.service';
 
 import { ReportsController } from './infrastructure/adapters/in/http/reports.controller';
 import { AnalyticsController } from './infrastructure/adapters/in/http/analytics.controller';
@@ -67,6 +70,7 @@ const ORM_ENTITIES = [
   CollectionCenterOrmEntity,
   DisasterTypeOrmEntity,
   VenezuelaStateOrmEntity,
+  ReportFeedbackOrmEntity,
 ];
 
 @Module({
@@ -184,6 +188,11 @@ const ORM_ENTITIES = [
     {
       provide: PROCESS_NLP_REPORT_USE_CASE,
       useClass: ProcessNlpReportService,
+    },
+    SubmitFeedbackService,
+    {
+      provide: SUBMIT_FEEDBACK_USE_CASE,
+      useClass: SubmitFeedbackService,
     },
   ],
 })
