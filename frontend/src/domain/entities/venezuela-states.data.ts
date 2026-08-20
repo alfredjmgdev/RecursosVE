@@ -1,0 +1,28 @@
+import type { VenezuelaStateFrontend } from '../ports/api-client.port';
+
+export const FALLBACK_VENEZUELA_STATES: VenezuelaStateFrontend[] = [
+  { id: 1,  nombre: 'Amazonas',         codigo: 'VE-Z', lat: 3.8510,  lng: -65.9380, zoom: 7  },
+  { id: 2,  nombre: 'Anzoátegui',       codigo: 'VE-B', lat: 8.9917,  lng: -63.8578, zoom: 8  },
+  { id: 3,  nombre: 'Apure',            codigo: 'VE-C', lat: 6.9000,  lng: -68.5100, zoom: 7  },
+  { id: 4,  nombre: 'Aragua',           codigo: 'VE-D', lat: 10.1225, lng: -67.5917, zoom: 9  },
+  { id: 5,  nombre: 'Barinas',          codigo: 'VE-E', lat: 8.6231,  lng: -70.2072, zoom: 8  },
+  { id: 6,  nombre: 'Bolívar',          codigo: 'VE-F', lat: 6.2000,  lng: -63.5000, zoom: 7  },
+  { id: 7,  nombre: 'Carabobo',         codigo: 'VE-G', lat: 10.1800, lng: -68.0000, zoom: 9  },
+  { id: 8,  nombre: 'Cojedes',          codigo: 'VE-H', lat: 9.6000,  lng: -68.3000, zoom: 8  },
+  { id: 9,  nombre: 'Delta Amacuro',    codigo: 'VE-Y', lat: 8.8819,  lng: -61.1405, zoom: 8  },
+  { id: 10, nombre: 'Distrito Capital', codigo: 'VE-A', lat: 10.4880, lng: -66.8791, zoom: 12 },
+  { id: 11, nombre: 'Falcón',           codigo: 'VE-I', lat: 11.1817, lng: -69.8600, zoom: 8  },
+  { id: 12, nombre: 'Guárico',          codigo: 'VE-J', lat: 8.7494,  lng: -66.2355, zoom: 8  },
+  { id: 13, nombre: 'Lara',             codigo: 'VE-K', lat: 10.0647, lng: -69.3570, zoom: 9  },
+  { id: 14, nombre: 'Mérida',          codigo: 'VE-L', lat: 8.5933,  lng: -71.1445, zoom: 9  },
+  { id: 15, nombre: 'Miranda',         codigo: 'VE-M', lat: 10.2500, lng: -66.6000, zoom: 9  },
+  { id: 16, nombre: 'Monagas',          codigo: 'VE-N', lat: 9.3354,  lng: -63.0233, zoom: 8  },
+  { id: 17, nombre: 'Nueva Esparta',    codigo: 'VE-O', lat: 11.0006, lng: -63.9117, zoom: 10 },
+  { id: 18, nombre: 'Portuguesa',      codigo: 'VE-P', lat: 9.0939,  lng: -69.0966, zoom: 9  },
+  { id: 19, nombre: 'Sucre',           codigo: 'VE-R', lat: 10.4500, lng: -63.7000, zoom: 8  },
+  { id: 20, nombre: 'Táchira',          codigo: 'VE-S', lat: 7.8000,  lng: -72.2000, zoom: 9  },
+  { id: 21, nombre: 'Trujillo',         codigo: 'VE-T', lat: 9.3689,  lng: -70.4267, zoom: 9  },
+  { id: 22, nombre: 'La Guaira',        codigo: 'VE-X', lat: 10.5960, lng: -66.9340, zoom: 11 },
+  { id: 23, nombre: 'Yaracuy',          codigo: 'VE-U', lat: 10.1500, lng: -68.7500, zoom: 9  },
+  { id: 24, nombre: 'Zulia',            codigo: 'VE-V', lat: 10.2000, lng: -71.6000, zoom: 8  },
+];

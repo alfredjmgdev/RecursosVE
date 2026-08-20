@@ -1,0 +1,22 @@
+# Dependencies & Build outputs
+node_modules/
+dist/
+.next/
+out/
+build/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE & AI Assistant config folders
+.claude/
+.config/
+.copilot/
+.cursor/
+.gemini/
+
+# System files
+.DS_Store
+*.log
