@@ -38,6 +38,7 @@ import { OFFER_DONATION_USE_CASE } from './domain/ports/in/offer-donation.use-ca
 import { LOGIN_USE_CASE } from './domain/ports/in/login.use-case';
 import { MANAGE_INFRASTRUCTURE_USE_CASE } from './domain/ports/in/manage-infrastructure.use-case';
 import { PROCESS_NLP_REPORT_USE_CASE } from './domain/ports/in/process-nlp-report.use-case';
+import { CALCULATE_OPTIMAL_ROUTE_USE_CASE } from './domain/ports/in/calculate-optimal-route.use-case';
 
 import { CreateReportService } from './application/services/create-report.service';
 import { GetActiveReportsService } from './application/services/get-active-reports.service';
@@ -49,6 +50,7 @@ import { OfferDonationService } from './application/services/offer-donation.serv
 import { LoginService } from './application/services/login.service';
 import { ManageInfrastructureService } from './application/services/manage-infrastructure.service';
 import { ProcessNlpReportService } from './application/services/process-nlp-report.service';
+import { CalculateOptimalRouteService } from './application/services/calculate-optimal-route.service';
 
 import { ReportsController } from './infrastructure/adapters/in/http/reports.controller';
 import { AnalyticsController } from './infrastructure/adapters/in/http/analytics.controller';
@@ -56,6 +58,7 @@ import { InventoryController } from './infrastructure/adapters/in/http/inventory
 import { DonationsController } from './infrastructure/adapters/in/http/donations.controller';
 import { AuthController } from './infrastructure/adapters/in/http/auth.controller';
 import { InfrastructureController } from './infrastructure/adapters/in/http/infrastructure.controller';
+import { RoutesController } from './infrastructure/adapters/in/http/routes.controller';
 
 const ORM_ENTITIES = [
   NeedReportOrmEntity,
@@ -89,8 +92,10 @@ const ORM_ENTITIES = [
     DonationsController,
     AuthController,
     InfrastructureController,
+    RoutesController,
   ],
   providers: [
+    CalculateOptimalRouteService,
     ReportPostgresRepository,
     InventoryPostgresRepository,
     DonationPostgresRepository,
@@ -100,6 +105,10 @@ const ORM_ENTITIES = [
     CollectionCenterPostgresRepository,
     DisasterTypePostgresRepository,
     VenezuelaStatePostgresRepository,
+    {
+      provide: CALCULATE_OPTIMAL_ROUTE_USE_CASE,
+      useClass: CalculateOptimalRouteService,
+    },
     {
       provide: REPORT_REPOSITORY_PORT,
       useExisting: ReportPostgresRepository,
