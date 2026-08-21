@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { X, Truck, AlertTriangle, ShieldCheck, Clock, MapPin, Navigation, ArrowRight } from 'lucide-react';
+import { X, AlertTriangle, Navigation, ArrowRight, Loader2 } from 'lucide-react';
 import { useRecursosVE } from '../../application/context/recursosve-context';
 import { RouteCalculationFrontend } from '../../domain/ports/api-client.port';
 
@@ -25,16 +25,27 @@ export const RouteMapModal: React.FC<RouteMapModalProps> = ({
   const { calculateRoute } = useRecursosVE();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
+  const layersGroupRef = useRef<L.LayerGroup | null>(null);
+  const isInitialFitRef = useRef<boolean>(false);
 
   const [tipoVehiculo, setTipoVehiculo] = useState<string>('CAMION_350');
   const [routeResult, setRouteResult] = useState<RouteCalculationFrontend | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [isCalculating, setIsCalculating] = useState<boolean>(false);
 
+  // Reset initial fit state when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      isInitialFitRef.current = false;
+    }
+  }, [isOpen]);
+
+  // Fetch route in background without unmounting existing result
   useEffect(() => {
     if (!isOpen) return;
 
+    let isMounted = true;
     const fetchRoute = async () => {
-      setLoading(true);
+      setIsCalculating(true);
       try {
         const res = await calculateRoute({
           origen,
@@ -42,37 +53,59 @@ export const RouteMapModal: React.FC<RouteMapModalProps> = ({
           tipoVehiculo,
           evitarZonasPeligro: true,
         });
-        setRouteResult(res);
+        if (isMounted) {
+          setRouteResult(res);
+        }
       } catch (err) {
         console.error('Error calculando ruta:', err);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setIsCalculating(false);
+        }
       }
     };
 
     fetchRoute();
+
+    return () => {
+      isMounted = false;
+    };
   }, [isOpen, origen.lat, origen.lng, destino.lat, destino.lng, tipoVehiculo, calculateRoute]);
 
-  // Leaflet map initialization and polyline rendering
+  // Initialize Map ONCE when modal opens
   useEffect(() => {
-    if (!isOpen || !mapContainerRef.current || !routeResult) return;
+    if (!isOpen || !mapContainerRef.current) return;
 
-    // Destroy existing map if present
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.remove();
-      mapInstanceRef.current = null;
+    if (!mapInstanceRef.current) {
+      const map = L.map(mapContainerRef.current, {
+        zoomControl: true,
+      }).setView([origen.lat, origen.lng], 12);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap',
+      }).addTo(map);
+
+      const layersGroup = L.layerGroup().addTo(map);
+      layersGroupRef.current = layersGroup;
+      mapInstanceRef.current = map;
     }
 
-    const map = L.map(mapContainerRef.current, {
-      zoomControl: true,
-    }).setView([origen.lat, origen.lng], 12);
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+        layersGroupRef.current = null;
+      }
+    };
+  }, [isOpen, origen.lat, origen.lng]);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap',
-    }).addTo(map);
+  // Smoothly update polyline and markers without recreating map or resetting zoom
+  useEffect(() => {
+    if (!mapInstanceRef.current || !layersGroupRef.current || !routeResult) return;
 
-    mapInstanceRef.current = map;
+    const layersGroup = layersGroupRef.current;
+    layersGroup.clearLayers();
 
     // Icons
     const greenIcon = L.divIcon({
@@ -91,11 +124,11 @@ export const RouteMapModal: React.FC<RouteMapModalProps> = ({
 
     // Add Start & End Markers
     L.marker([origen.lat, origen.lng], { icon: greenIcon })
-      .addTo(map)
+      .addTo(layersGroup)
       .bindPopup(`<b>Origen:</b> ${origen.nombre || 'Centro de Acopio'}`);
 
     L.marker([destino.lat, destino.lng], { icon: redIcon })
-      .addTo(map)
+      .addTo(layersGroup)
       .bindPopup(`<b>Destino:</b> ${destino.nombre || 'Campamento de Refugio'}`);
 
     // Polyline color based on risk
@@ -116,17 +149,14 @@ export const RouteMapModal: React.FC<RouteMapModalProps> = ({
       weight: 6,
       opacity: 0.85,
       dashArray: routeResult.nivelRiesgo === 'CRITICO' ? '8, 8' : undefined,
-    }).addTo(map);
+    }).addTo(layersGroup);
 
-    map.fitBounds(polyline.getBounds(), { padding: [40, 40] });
-
-    return () => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-      }
-    };
-  }, [isOpen, routeResult, origen, destino]);
+    // Only fitBounds ONCE when the route is loaded for the first time
+    if (!isInitialFitRef.current) {
+      mapInstanceRef.current.fitBounds(polyline.getBounds(), { padding: [40, 40] });
+      isInitialFitRef.current = true;
+    }
+  }, [routeResult, origen, destino]);
 
   if (!isOpen) return null;
 
@@ -161,9 +191,17 @@ export const RouteMapModal: React.FC<RouteMapModalProps> = ({
             
             {/* Vehicle Selector */}
             <div className="shrink-0">
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-                Tipo de Vehículo Logístico
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                  Tipo de Vehículo Logístico
+                </label>
+                {isCalculating && (
+                  <span className="flex items-center gap-1 text-[11px] text-cyan-400 font-semibold animate-pulse">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    Actualizando...
+                  </span>
+                )}
+              </div>
               <select
                 value={tipoVehiculo}
                 onChange={(e) => setTipoVehiculo(e.target.value)}
@@ -176,10 +214,10 @@ export const RouteMapModal: React.FC<RouteMapModalProps> = ({
               </select>
             </div>
 
-            {loading ? (
+            {!routeResult && isCalculating ? (
               <div className="flex-1 flex flex-col items-center justify-center text-slate-400 gap-3 min-h-[300px]">
                 <Navigation className="w-8 h-8 animate-spin text-cyan-400" />
-                <span className="text-sm font-semibold">Calculando trayectoria óptima...</span>
+                <span className="text-sm font-semibold">Calculando trayectoria inicial...</span>
               </div>
             ) : routeResult ? (
               <div className="space-y-4 flex-1">
