@@ -1,12 +1,27 @@
 import { Controller, Get, Post, Delete, Body, Param, Inject, BadRequestException, NotFoundException } from '@nestjs/common';
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { USER_REPOSITORY_PORT, UserRepositoryPort } from '../../../../domain/ports/out/user-repository.port';
 import { UserRole } from '../../../../domain/entities/user.entity';
 
 export class CreateUserDto {
-  email: string;
+  @IsEmail({}, { message: 'El correo electrónico no es válido' })
+  @IsNotEmpty({ message: 'El correo electrónico es requerido' })
+  email!: string;
+
+  @IsString()
+  @IsOptional()
   password?: string;
-  nombre: string;
-  rol: UserRole;
+
+  @IsString()
+  @IsNotEmpty({ message: 'El nombre es requerido' })
+  nombre!: string;
+
+  @IsEnum(UserRole, { message: 'Rol de usuario inválido' })
+  @IsNotEmpty({ message: 'El rol es requerido' })
+  rol!: UserRole;
+
+  @IsString()
+  @IsOptional()
   campamentoAsignado?: string;
 }
 
@@ -24,10 +39,6 @@ export class UsersController {
 
   @Post()
   async createUser(@Body() dto: CreateUserDto) {
-    if (!dto.email || !dto.nombre || !dto.rol) {
-      throw new BadRequestException('Los campos email, nombre y rol son obligatorios.');
-    }
-
     const existing = await this.userRepo.findByEmail(dto.email);
     if (existing) {
       throw new BadRequestException('Ya existe un usuario registrado con este correo electrónico.');
