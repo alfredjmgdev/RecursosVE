@@ -162,7 +162,11 @@ export const DriverDashboardView: React.FC = () => {
     setUpdating(true);
     try {
       const updated = await updateShipmentStatus(shipment.id, nuevoEstado);
-      setShipment(updated);
+      if (nuevoEstado === 'ENTREGADO') {
+        setShipment(null);
+      } else {
+        setShipment(updated);
+      }
     } catch (err) {
       console.error('Error actualizando estado:', err);
     } finally {

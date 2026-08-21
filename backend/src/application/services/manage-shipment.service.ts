@@ -149,7 +149,6 @@ export class ManageShipmentService implements ManageShipmentUseCase, OnModuleIni
       where: [
         { transportistaId, estado: 'ASIGNADO' },
         { transportistaId, estado: 'RECOGIDO' },
-        { transportistaId, estado: 'ENTREGADO' },
       ],
       order: { createdAt: 'DESC' },
     });
