@@ -16,9 +16,6 @@ export class UserOrmEntity {
   @Column({ type: 'varchar' })
   nombre: string;
 
-  @Column({ type: 'int', name: 'rol_id' })
-  rolId: number;
-
   @ManyToOne(() => RoleOrmEntity, { eager: true })
   @JoinColumn({ name: 'rol_id' })
   role: RoleOrmEntity;

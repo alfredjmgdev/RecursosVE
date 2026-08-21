@@ -87,7 +87,14 @@ export class UserPostgresRepository implements UserRepositoryPort, OnModuleInit 
       ];
 
       for (const userData of initialUsers) {
-        const entity = this.repo.create(userData);
+        const entity = this.repo.create({
+          id: userData.id,
+          email: userData.email,
+          password: userData.password,
+          nombre: userData.nombre,
+          role: { id: userData.rolId } as RoleOrmEntity,
+          campamentoAsignado: userData.campamentoAsignado,
+        });
         await this.repo.save(entity);
       }
       console.log('✅ Usuarios iniciales sembrados exitosamente en PostgreSQL (tabla users con FK rol_id)');
@@ -127,12 +134,11 @@ export class UserPostgresRepository implements UserRepositoryPort, OnModuleInit 
       email: data.email.toLowerCase(),
       password: data.password || '123456',
       nombre: data.nombre,
-      rolId: rolInfo.id,
+      role: { id: rolInfo.id } as RoleOrmEntity,
       campamentoAsignado: data.campamentoAsignado || null,
     });
 
     const saved = await this.repo.save(entity);
-    // Reload entity to fetch eager role relation
     const reloaded = await this.repo.findOne({ where: { id: saved.id } });
     return reloaded ? reloaded.toDomain() : saved.toDomain();
   }

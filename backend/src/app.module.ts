@@ -71,6 +71,8 @@ import { UsersController } from './infrastructure/adapters/in/http/users.control
 import { RoleOrmEntity } from './infrastructure/adapters/out/persistence/postgres/entities/role.orm-entity';
 
 const ORM_ENTITIES = [
+  RoleOrmEntity,
+  UserOrmEntity,
   NeedReportOrmEntity,
   DisasterZoneOrmEntity,
   RefugeeCampOrmEntity,
@@ -79,8 +81,6 @@ const ORM_ENTITIES = [
   VenezuelaStateOrmEntity,
   ReportFeedbackOrmEntity,
   DispatchShipmentOrmEntity,
-  UserOrmEntity,
-  RoleOrmEntity,
 ];
 
 @Module({
