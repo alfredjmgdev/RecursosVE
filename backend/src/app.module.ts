@@ -9,11 +9,12 @@ import { DisasterTypeOrmEntity } from './infrastructure/adapters/out/persistence
 import { VenezuelaStateOrmEntity } from './infrastructure/adapters/out/persistence/postgres/entities/venezuela-state.orm-entity';
 import { ReportFeedbackOrmEntity } from './infrastructure/adapters/out/persistence/postgres/entities/report-feedback.orm-entity';
 import { DispatchShipmentOrmEntity } from './infrastructure/adapters/out/persistence/postgres/entities/dispatch-shipment.orm-entity';
+import { UserOrmEntity } from './infrastructure/adapters/out/persistence/postgres/entities/user.orm-entity';
 
 import { ReportPostgresRepository } from './infrastructure/adapters/out/persistence/postgres/repositories/report.postgres-repository';
 import { InventoryPostgresRepository } from './infrastructure/adapters/out/persistence/postgres/repositories/inventory.postgres-repository';
 import { DonationPostgresRepository } from './infrastructure/adapters/out/persistence/postgres/repositories/donation.postgres-repository';
-import { UserInMemoryRepository } from './infrastructure/adapters/out/persistence/postgres/repositories/user.postgres-repository';
+import { UserPostgresRepository } from './infrastructure/adapters/out/persistence/postgres/repositories/user.postgres-repository';
 import { DisasterZonePostgresRepository } from './infrastructure/adapters/out/persistence/postgres/repositories/disaster-zone.postgres-repository';
 import { RefugeeCampPostgresRepository } from './infrastructure/adapters/out/persistence/postgres/repositories/refugee-camp.postgres-repository';
 import { CollectionCenterPostgresRepository } from './infrastructure/adapters/out/persistence/postgres/repositories/collection-center.postgres-repository';
@@ -66,6 +67,7 @@ import { AuthController } from './infrastructure/adapters/in/http/auth.controlle
 import { InfrastructureController } from './infrastructure/adapters/in/http/infrastructure.controller';
 import { RoutesController } from './infrastructure/adapters/in/http/routes.controller';
 import { ShipmentsController } from './infrastructure/adapters/in/http/shipments.controller';
+import { UsersController } from './infrastructure/adapters/in/http/users.controller';
 
 const ORM_ENTITIES = [
   NeedReportOrmEntity,
@@ -76,6 +78,7 @@ const ORM_ENTITIES = [
   VenezuelaStateOrmEntity,
   ReportFeedbackOrmEntity,
   DispatchShipmentOrmEntity,
+  UserOrmEntity,
 ];
 
 @Module({
@@ -103,13 +106,14 @@ const ORM_ENTITIES = [
     InfrastructureController,
     RoutesController,
     ShipmentsController,
+    UsersController,
   ],
   providers: [
     CalculateOptimalRouteService,
     ReportPostgresRepository,
     InventoryPostgresRepository,
     DonationPostgresRepository,
-    UserInMemoryRepository,
+    UserPostgresRepository,
     DisasterZonePostgresRepository,
     RefugeeCampPostgresRepository,
     CollectionCenterPostgresRepository,
@@ -133,7 +137,7 @@ const ORM_ENTITIES = [
     },
     {
       provide: USER_REPOSITORY_PORT,
-      useExisting: UserInMemoryRepository,
+      useExisting: UserPostgresRepository,
     },
     {
       provide: DISASTER_ZONE_REPOSITORY_PORT,

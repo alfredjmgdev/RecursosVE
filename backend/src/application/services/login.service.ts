@@ -12,26 +12,20 @@ export class LoginService implements LoginUseCase {
   ) {}
 
   async execute(command: LoginCommand): Promise<AuthResult> {
-    const user = await this.userRepository.findByEmail(command.email);
+    const rawUser = await this.userRepository.findRawByEmail(command.email);
 
-    if (!user) {
+    if (!rawUser) {
       throw new UnauthorizedException('Credenciales inválidas. Usuario no encontrado.');
     }
 
-    // Simple password check for demo MVP
-    const validPasswordMap: Record<string, string> = {
-      'coordinador@recursosve.org': 'coord123',
-      'brigadista@recursosve.org': 'briga123',
-      'donante@recursosve.org': 'donant123',
-      'transportista@recursosve.org': 'driver123',
-      'transportista@recursos.ve': 'driver123',
-    };
-
-    const expectedPassword = validPasswordMap[command.email.toLowerCase()] ?? '123456';
+    const expectedPassword = rawUser.password || '123456';
 
     if (command.password !== expectedPassword) {
       throw new UnauthorizedException('Contraseña incorrecta');
     }
+
+    // Strip password field before returning user domain object
+    const { password, ...user } = rawUser;
 
     const token = `token_recursosve_${user.id}_${Date.now()}`;
 
