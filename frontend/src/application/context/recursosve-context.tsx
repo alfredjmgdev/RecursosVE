@@ -97,6 +97,12 @@ interface RecursosVEContextType {
   venezuelaStates: VenezuelaStateFrontend[];
   selectedStateId: number | null;
   setSelectedStateId: (id: number | null) => void;
+
+  // User Management
+  users: import('../../domain/ports/api-client.port').UserFrontend[];
+  fetchUsers: () => Promise<void>;
+  createUser: (payload: import('../../domain/ports/api-client.port').CreateUserPayloadFrontend) => Promise<import('../../domain/ports/api-client.port').UserFrontend>;
+  deleteUser: (id: string) => Promise<boolean>;
 }
 
 const RecursosVEContext = createContext<RecursosVEContextType | undefined>(undefined);
@@ -260,6 +266,33 @@ export const RecursosVEProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setCustomDesastres((prev) => prev.filter((d) => d.id !== id));
   };
 
+  const [users, setUsers] = useState<import('../../domain/ports/api-client.port').UserFrontend[]>([]);
+
+  const fetchUsers = async () => {
+    try {
+      const data = await apiClient.getUsers();
+      setUsers(data || []);
+    } catch (err) {
+      console.error('Error cargando usuarios:', err);
+    }
+  };
+
+  const handleCreateUser = async (payload: import('../../domain/ports/api-client.port').CreateUserPayloadFrontend) => {
+    const newUser = await apiClient.createUser(payload);
+    await fetchUsers();
+    return newUser;
+  };
+
+  const handleDeleteUser = async (id: string) => {
+    const res = await apiClient.deleteUser(id);
+    await fetchUsers();
+    return res;
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
   return (
     <RecursosVEContext.Provider
       value={{
@@ -301,6 +334,10 @@ export const RecursosVEProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         venezuelaStates,
         selectedStateId,
         setSelectedStateId,
+        users,
+        fetchUsers,
+        createUser: handleCreateUser,
+        deleteUser: handleDeleteUser,
       }}
     >
       {children}

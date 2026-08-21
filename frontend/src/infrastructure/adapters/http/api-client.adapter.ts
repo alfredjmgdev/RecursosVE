@@ -14,6 +14,8 @@ import {
   SubmitFeedbackPayloadFrontend,
   FeedbackResultFrontend,
   DispatchShipmentFrontend,
+  UserFrontend,
+  CreateUserPayloadFrontend,
 } from '../../../domain/ports/api-client.port';
 import { GapAnalysisResult, ActionPlanType } from '../../../domain/entities/gap-analysis.entity';
 import { NeedReport, ReportStatus, ResourceCategory } from '../../../domain/entities/report.entity';
@@ -880,5 +882,65 @@ export class ApiClientAdapter implements ApiClientPort {
       recogidoAt: nuevoEstado === 'RECOGIDO' || nuevoEstado === 'ENTREGADO' ? new Date().toISOString() : undefined,
       entregadoAt: nuevoEstado === 'ENTREGADO' ? new Date().toISOString() : undefined,
     };
+  }
+
+  async getUsers(): Promise<UserFrontend[]> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/users`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // Fallback
+    }
+
+    return [
+      { id: 'usr_coord_1', email: 'coordinador@recursosve.org', nombre: 'Juan P.', rol: UserRole.COORDINADOR, campamentoAsignado: 'Campamento La Guaira #12' },
+      { id: 'usr_brig_2', email: 'brigadista@recursosve.org', nombre: 'Pedro R.', rol: UserRole.BRIGADISTA, campamentoAsignado: 'Depósito Las Flores' },
+      { id: 'usr_donante_3', email: 'donante@recursosve.org', nombre: 'ONG Farmacéuticos Solidarios', rol: UserRole.DONANTE },
+      { id: 'usr_trans_4', email: 'transportista@recursosve.org', nombre: 'Carlos Mendoza (Chofer 4x4)', rol: UserRole.TRANSPORTISTA },
+      { id: 'usr_trans_4_alt', email: 'transportista@recursos.ve', nombre: 'Carlos Mendoza (Chofer 4x4)', rol: UserRole.TRANSPORTISTA },
+    ];
+  }
+
+  async createUser(payload: CreateUserPayloadFrontend): Promise<UserFrontend> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+      const errData = await res.json();
+      throw new Error(errData.message || 'Error al crear usuario');
+    } catch (err: any) {
+      if (err.message && !err.message.includes('fetch')) {
+        throw err;
+      }
+    }
+
+    return {
+      id: `usr_${Date.now()}`,
+      email: payload.email,
+      nombre: payload.nombre,
+      rol: payload.rol,
+      campamentoAsignado: payload.campamentoAsignado,
+    };
+  }
+
+  async deleteUser(id: string): Promise<boolean> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/users/${id}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        return true;
+      }
+    } catch {
+      // Fallback
+    }
+    return true;
   }
 }

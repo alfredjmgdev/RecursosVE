@@ -1,7 +1,7 @@
 import { NeedReport, ReportStatus } from '../entities/report.entity';
 import { GapAnalysisResult } from '../entities/gap-analysis.entity';
 import { LearningMetricsSummary } from '../entities/learning.entity';
-import { User, AuthResultFrontend } from '../entities/user.entity';
+import { User, AuthResultFrontend, UserRole } from '../entities/user.entity';
 
 export interface CreateReportPayload {
   tipo: string;
@@ -229,4 +229,24 @@ export interface ApiClientPort {
   deleteAcopio(id: string): Promise<boolean>;
 
   getStates(): Promise<VenezuelaStateFrontend[]>;
+
+  getUsers(): Promise<UserFrontend[]>;
+  createUser(payload: CreateUserPayloadFrontend): Promise<UserFrontend>;
+  deleteUser(id: string): Promise<boolean>;
+}
+
+export interface UserFrontend {
+  id: string;
+  email: string;
+  nombre: string;
+  rol: UserRole;
+  campamentoAsignado?: string;
+}
+
+export interface CreateUserPayloadFrontend {
+  email: string;
+  password?: string;
+  nombre: string;
+  rol: UserRole;
+  campamentoAsignado?: string;
 }

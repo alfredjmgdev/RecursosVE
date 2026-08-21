@@ -9,6 +9,7 @@ import { UserRole } from '../../domain/entities/user.entity';
 import { StatusBadge } from '../components/status-badge';
 import { RegisterInfrastructureModal } from '../components/register-infrastructure-modal';
 import { ManageInfrastructureListModal } from '../components/manage-infrastructure-list-modal';
+import { ManageUsersModalComponent } from '../components/manage-users-modal.component';
 import {
   AlertCircle,
   AlertTriangle,
@@ -28,6 +29,7 @@ import {
   Calendar,
   Clock,
   Navigation,
+  Users,
 } from 'lucide-react';
 import { ActionPlanType, GapAnalysisResult } from '../../domain/entities/gap-analysis.entity';
 import { ReportStatus } from '../../domain/entities/report.entity';
@@ -120,6 +122,7 @@ export const CoordinatorDashboardView: React.FC<CoordinatorDashboardViewProps> =
   // Modal & Map Location Picker State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isManageModalOpen, setIsManageModalOpen] = useState(false);
+  const [isUsersModalOpen, setIsUsersModalOpen] = useState(false);
   const [isRouteModalOpen, setIsRouteModalOpen] = useState(false);
   const [isSelectingLocation, setIsSelectingLocation] = useState(false);
   const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -253,6 +256,12 @@ export const CoordinatorDashboardView: React.FC<CoordinatorDashboardViewProps> =
         onClose={() => setIsManageModalOpen(false)}
       />
 
+      {/* User Management (PostgreSQL DB) Modal */}
+      <ManageUsersModalComponent
+        isOpen={isUsersModalOpen}
+        onClose={() => setIsUsersModalOpen(false)}
+      />
+
       {/* 1. Map & Filters Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
         {/* Top Command Header Banner */}
@@ -300,11 +309,19 @@ export const CoordinatorDashboardView: React.FC<CoordinatorDashboardViewProps> =
           {/* Right Column: Action Buttons */}
           <div className="relative z-10 flex flex-wrap items-center gap-3 shrink-0">
             <button
+              onClick={() => setIsUsersModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-black text-xs shadow-md hover:shadow-lg transition-all border border-slate-700 cursor-pointer"
+            >
+              <Users className="w-4 h-4 text-amber-400" />
+              <span>👥 Usuarios DB</span>
+            </button>
+
+            <button
               onClick={() => setIsRouteModalOpen(true)}
               className="flex items-center gap-2 px-4 py-3 bg-cyan-950/80 hover:bg-cyan-900 text-cyan-200 rounded-2xl font-black text-xs shadow-md transition-all border border-cyan-700/50 cursor-pointer"
             >
               <Navigation className="w-4 h-4 text-cyan-400 animate-pulse" />
-              <span>🛣️ Agente 3: Ruteo Logístico</span>
+              <span>🛣️ Agente 3: Ruteo</span>
             </button>
 
             <button
