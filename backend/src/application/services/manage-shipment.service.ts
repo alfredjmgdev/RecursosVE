@@ -14,7 +14,7 @@ export class ManageShipmentService implements ManageShipmentUseCase, OnModuleIni
   async onModuleInit() {
     const initialShipments: Array<Partial<DispatchShipmentOrmEntity>> = [
       {
-        id: 'ship_demo_101',
+        id: 'a1111111-1111-4111-8111-111111111101',
         donacionId: 'DON_9901',
         reporteId: 'REP_LAGUAIRA_01',
         transportistaId: 'usr_trans_4',
@@ -27,7 +27,7 @@ export class ManageShipmentService implements ManageShipmentUseCase, OnModuleIni
         insumoDescripcion: '500L Agua Potable & 20 Kits Médicos de Urgencia',
       },
       {
-        id: 'ship_demo_101_alt',
+        id: 'a1111111-1111-4111-8111-111111111104',
         donacionId: 'DON_9901_ALT',
         reporteId: 'REP_LAGUAIRA_01',
         transportistaId: 'usr_trans_4_alt',
@@ -40,7 +40,7 @@ export class ManageShipmentService implements ManageShipmentUseCase, OnModuleIni
         insumoDescripcion: '500L Agua Potable & 20 Kits Médicos de Urgencia',
       },
       {
-        id: 'ship_demo_102',
+        id: 'a1111111-1111-4111-8111-111111111102',
         donacionId: 'DON_9902',
         reporteId: 'REP_MACUTO_02',
         transportistaId: 'usr_trans_5',
@@ -54,7 +54,7 @@ export class ManageShipmentService implements ManageShipmentUseCase, OnModuleIni
         recogidoAt: new Date(),
       },
       {
-        id: 'ship_demo_103',
+        id: 'a1111111-1111-4111-8111-111111111103',
         donacionId: 'DON_9903',
         reporteId: 'REP_NAIGUATA_03',
         transportistaId: 'usr_trans_6',
@@ -71,7 +71,7 @@ export class ManageShipmentService implements ManageShipmentUseCase, OnModuleIni
     ];
 
     for (const shipData of initialShipments) {
-      const existing = await this.shipmentRepository.findOneBy({ id: shipData.id });
+      const existing = await this.shipmentRepository.findOneBy({ transportistaId: shipData.transportistaId });
       if (!existing) {
         const entity = this.shipmentRepository.create(shipData);
         await this.shipmentRepository.save(entity);
