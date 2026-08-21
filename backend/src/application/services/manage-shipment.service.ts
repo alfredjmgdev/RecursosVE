@@ -1,34 +1,113 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DispatchShipmentOrmEntity } from '../../infrastructure/adapters/out/persistence/postgres/entities/dispatch-shipment.orm-entity';
 import { ManageShipmentUseCase, AssignShipmentCommand, DispatchShipmentDto } from '../../domain/ports/in/manage-shipment.use-case';
 
 @Injectable()
-export class ManageShipmentService implements ManageShipmentUseCase {
+export class ManageShipmentService implements ManageShipmentUseCase, OnModuleInit {
   constructor(
     @InjectRepository(DispatchShipmentOrmEntity)
     private readonly shipmentRepository: Repository<DispatchShipmentOrmEntity>,
   ) {}
 
+  async onModuleInit() {
+    const count = await this.shipmentRepository.count();
+    if (count === 0) {
+      const initialShipments: Array<Partial<DispatchShipmentOrmEntity>> = [
+        {
+          id: 'ship_demo_101',
+          donacionId: 'DON_9901',
+          reporteId: 'REP_LAGUAIRA_01',
+          transportistaId: 'usr_trans_4',
+          transportistaNombre: 'Carlos Mendoza (Pick-Up 4x4)',
+          vehiculoTipo: 'PICKUP_4X4',
+          ubicacionInicial: { lat: 10.605, lng: -66.94, nombre: 'Base Logística Catia La Mar' },
+          origen: { lat: 10.601, lng: -66.932, nombre: 'Centro de Acopio Puerto La Guaira' },
+          destino: { lat: 10.595, lng: -66.915, nombre: 'Refugio Carayaca Emergencia' },
+          estado: 'ASIGNADO',
+          insumoDescripcion: '500L Agua Potable & 20 Kits Médicos de Urgencia',
+        },
+        {
+          id: 'ship_demo_101_alt',
+          donacionId: 'DON_9901_ALT',
+          reporteId: 'REP_LAGUAIRA_01',
+          transportistaId: 'usr_trans_4_alt',
+          transportistaNombre: 'Carlos Mendoza (Pick-Up 4x4)',
+          vehiculoTipo: 'PICKUP_4X4',
+          ubicacionInicial: { lat: 10.605, lng: -66.94, nombre: 'Base Logística Catia La Mar' },
+          origen: { lat: 10.601, lng: -66.932, nombre: 'Centro de Acopio Puerto La Guaira' },
+          destino: { lat: 10.595, lng: -66.915, nombre: 'Refugio Carayaca Emergencia' },
+          estado: 'ASIGNADO',
+          insumoDescripcion: '500L Agua Potable & 20 Kits Médicos de Urgencia',
+        },
+        {
+          id: 'ship_demo_102',
+          donacionId: 'DON_9902',
+          reporteId: 'REP_MACUTO_02',
+          transportistaId: 'usr_trans_5',
+          transportistaNombre: 'María Briceño (Chuto 10T)',
+          vehiculoTipo: 'CHUTO_10T',
+          ubicacionInicial: { lat: 10.585, lng: -66.91, nombre: 'Terminal Maiquetía' },
+          origen: { lat: 10.598, lng: -66.902, nombre: 'Depósito Central Maiquetía' },
+          destino: { lat: 10.612, lng: -66.885, nombre: 'Campamento Refugio Macuto' },
+          estado: 'RECOGIDO',
+          insumoDescripcion: '30 Cajas de Medicamentos Esenciales & Mantas Térmicas',
+          recogidoAt: new Date(),
+        },
+        {
+          id: 'ship_demo_103',
+          donacionId: 'DON_9903',
+          reporteId: 'REP_NAIGUATA_03',
+          transportistaId: 'usr_trans_6',
+          transportistaNombre: 'Roberto "Tito" Silva (Camión 350)',
+          vehiculoTipo: 'CAMION_350',
+          ubicacionInicial: { lat: 10.62, lng: -66.86, nombre: 'Base Logística Caraballeda' },
+          origen: { lat: 10.625, lng: -66.845, nombre: 'Centro de Acopio Naiguatá' },
+          destino: { lat: 10.63, lng: -66.82, nombre: 'Refugio Los Anare' },
+          estado: 'ENTREGADO',
+          insumoDescripcion: '150 Raciones de Comida No Perecedera & Kits de Higiene',
+          recogidoAt: new Date(Date.now() - 3600000),
+          entregadoAt: new Date(),
+        },
+      ];
+
+      for (const shipData of initialShipments) {
+        const entity = this.shipmentRepository.create(shipData);
+        await this.shipmentRepository.save(entity);
+      }
+      console.log('✅ Despachos iniciales sembrados exitosamente en PostgreSQL (tabla dispatch_shipments)');
+    }
+  }
+
   async assignSmartShipment(command: AssignShipmentCommand): Promise<DispatchShipmentDto> {
-    // 1. Available drivers database pool
     const availableDrivers = [
       {
         id: 'usr_trans_4',
-        nombre: 'Carlos Mendoza (Chofer 4x4)',
+        nombre: 'Carlos Mendoza (Pick-Up 4x4)',
         ubicacionInicial: { lat: 10.605, lng: -66.94, nombre: 'Base Logística Catia La Mar' },
         vehiculo: command.vehiculoTipo || 'PICKUP_4X4',
       },
       {
         id: 'usr_trans_5',
-        nombre: 'Jesús Silva (Camión 350)',
-        ubicacionInicial: { lat: 10.58, lng: -66.91, nombre: 'Terminal Maiquetía' },
+        nombre: 'María Briceño (Chuto 10T)',
+        ubicacionInicial: { lat: 10.585, lng: -66.91, nombre: 'Terminal Maiquetía' },
+        vehiculo: 'CHUTO_10T',
+      },
+      {
+        id: 'usr_trans_6',
+        nombre: 'Roberto "Tito" Silva (Camión 350)',
+        ubicacionInicial: { lat: 10.62, lng: -66.86, nombre: 'Base Logística Caraballeda' },
         vehiculo: 'CAMION_350',
+      },
+      {
+        id: 'usr_trans_7',
+        nombre: 'Yorman Gutiérrez (Furgón Médico)',
+        ubicacionInicial: { lat: 10.61, lng: -66.92, nombre: 'Centro Médico La Guaira' },
+        vehiculo: 'FURGON_REFRIGERADO',
       },
     ];
 
-    // 2. Select optimal driver based on proximity to pickup origin
     let selectedDriver = availableDrivers[0];
     let minDistance = Infinity;
 
@@ -45,7 +124,6 @@ export class ManageShipmentService implements ManageShipmentUseCase {
       }
     }
 
-    // 3. Create and persist dispatch shipment
     const entity = this.shipmentRepository.create({
       donacionId: command.donacionId || `DON_${Date.now()}`,
       reporteId: command.reporteId || `REP_${Date.now()}`,
@@ -64,23 +142,22 @@ export class ManageShipmentService implements ManageShipmentUseCase {
   }
 
   async getAssignedShipment(transportistaId: string): Promise<DispatchShipmentDto | null> {
-    // Search for non-completed shipment for this driver or demo fallback
     const shipment = await this.shipmentRepository.findOne({
       where: [
         { transportistaId, estado: 'ASIGNADO' },
         { transportistaId, estado: 'RECOGIDO' },
+        { transportistaId, estado: 'ENTREGADO' },
       ],
       order: { createdAt: 'DESC' },
     });
 
     if (!shipment) {
-      // Fallback demo shipment if database is empty for testing UI
       return {
-        id: 'ship_demo_101',
+        id: `ship_fallback_${transportistaId}`,
         donacionId: 'DON_9901',
         reporteId: 'REP_LAGUAIRA_01',
         transportistaId,
-        transportistaNombre: 'Carlos Mendoza (Chofer 4x4)',
+        transportistaNombre: 'Carlos Mendoza (Pick-Up 4x4)',
         vehiculoTipo: 'PICKUP_4X4',
         ubicacionInicial: { lat: 10.605, lng: -66.94, nombre: 'Base Logística Catia La Mar' },
         origen: { lat: 10.601, lng: -66.932, nombre: 'Centro de Acopio Puerto La Guaira' },
@@ -95,19 +172,19 @@ export class ManageShipmentService implements ManageShipmentUseCase {
   }
 
   async updateShipmentStatus(id: string, nuevoEstado: 'RECOGIDO' | 'ENTREGADO'): Promise<DispatchShipmentDto> {
-    if (id === 'ship_demo_101') {
+    if (id.startsWith('ship_fallback_')) {
       return {
         id,
         donacionId: 'DON_9901',
         reporteId: 'REP_LAGUAIRA_01',
-        transportistaId: 'usr_trans_4',
-        transportistaNombre: 'Carlos Mendoza (Chofer 4x4)',
+        transportistaId: id.replace('ship_fallback_', ''),
+        transportistaNombre: 'Transportista',
         vehiculoTipo: 'PICKUP_4X4',
         ubicacionInicial: { lat: 10.605, lng: -66.94, nombre: 'Base Logística Catia La Mar' },
         origen: { lat: 10.601, lng: -66.932, nombre: 'Centro de Acopio Puerto La Guaira' },
         destino: { lat: 10.595, lng: -66.915, nombre: 'Refugio Carayaca Emergencia' },
         estado: nuevoEstado,
-        insumoDescripcion: '500L Agua Potable & 20 Kits Médicos de Urgencia',
+        insumoDescripcion: 'Insumos Médicos y de Emergencia',
         createdAt: new Date(),
         recogidoAt: nuevoEstado === 'RECOGIDO' || nuevoEstado === 'ENTREGADO' ? new Date() : undefined,
         entregadoAt: nuevoEstado === 'ENTREGADO' ? new Date() : undefined,
@@ -131,7 +208,7 @@ export class ManageShipmentService implements ManageShipmentUseCase {
   }
 
   private calculateDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
-    const R = 6371; // Earth radius in km
+    const R = 6371;
     const dLat = (lat2 - lat1) * (Math.PI / 180);
     const dLon = (lon2 - lon1) * (Math.PI / 180);
     const a =
