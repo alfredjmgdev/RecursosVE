@@ -16,8 +16,7 @@ export class UserOrmEntity {
   nombre: string;
 
   @Column({
-    type: 'enum',
-    enum: UserRole,
+    type: 'varchar',
     default: UserRole.BRIGADISTA,
   })
   rol: UserRole;
