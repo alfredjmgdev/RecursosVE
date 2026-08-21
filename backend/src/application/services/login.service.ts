@@ -23,6 +23,8 @@ export class LoginService implements LoginUseCase {
       'coordinador@recursosve.org': 'coord123',
       'brigadista@recursosve.org': 'briga123',
       'donante@recursosve.org': 'donant123',
+      'transportista@recursosve.org': 'driver123',
+      'transportista@recursos.ve': 'driver123',
     };
 
     const expectedPassword = validPasswordMap[command.email.toLowerCase()] ?? '123456';
