@@ -23,94 +23,94 @@ export class UserPostgresRepository implements UserRepositoryPort, OnModuleInit 
   ) {}
 
   async onModuleInit() {
-    // 1. Seed Roles table if empty
-    const roleCount = await this.roleRepo.count();
-    if (roleCount === 0) {
-      const rolesToSeed: Array<Partial<RoleOrmEntity>> = [
-        { id: 1, codigo: UserRole.COORDINADOR, nombre: 'Coordinador Logístico' },
-        { id: 2, codigo: UserRole.BRIGADISTA, nombre: 'Brigadista en Terreno' },
-        { id: 3, codigo: UserRole.DONANTE, nombre: 'Donante Aliado' },
-        { id: 4, codigo: UserRole.TRANSPORTISTA, nombre: 'Transportista Logístico' },
-      ];
+    // 1. Seed Roles table
+    const rolesToSeed: Array<Partial<RoleOrmEntity>> = [
+      { id: 1, codigo: UserRole.COORDINADOR, nombre: 'Coordinador Logístico' },
+      { id: 2, codigo: UserRole.BRIGADISTA, nombre: 'Brigadista en Terreno' },
+      { id: 3, codigo: UserRole.DONANTE, nombre: 'Donante Aliado' },
+      { id: 4, codigo: UserRole.TRANSPORTISTA, nombre: 'Transportista Logístico' },
+    ];
 
-      for (const r of rolesToSeed) {
+    for (const r of rolesToSeed) {
+      const existing = await this.roleRepo.findOneBy({ id: r.id });
+      if (!existing) {
         const roleEntity = this.roleRepo.create(r);
         await this.roleRepo.save(roleEntity);
       }
-      console.log('✅ Catálogo de roles sembrado exitosamente en PostgreSQL (tabla roles)');
     }
+    console.log('✅ Catálogo de roles verificado/sembrado en PostgreSQL (tabla roles)');
 
-    // 2. Seed initial demo users into PostgreSQL if empty
-    const count = await this.repo.count();
-    if (count === 0) {
-      const initialUsers = [
-        {
-          id: 'usr_coord_1',
-          email: 'coordinador@recursosve.org',
-          password: 'coord123',
-          nombre: 'Juan P.',
-          rolId: ROLE_MAP[UserRole.COORDINADOR].id,
-          campamentoAsignado: 'Campamento La Guaira #12',
-        },
-        {
-          id: 'usr_brig_2',
-          email: 'brigadista@recursosve.org',
-          password: 'briga123',
-          nombre: 'Pedro R.',
-          rolId: ROLE_MAP[UserRole.BRIGADISTA].id,
-          campamentoAsignado: 'Depósito Las Flores',
-        },
-        {
-          id: 'usr_donante_3',
-          email: 'donante@recursosve.org',
-          password: 'donant123',
-          nombre: 'ONG Farmacéuticos Solidarios',
-          rolId: ROLE_MAP[UserRole.DONANTE].id,
-          campamentoAsignado: null,
-        },
-        {
-          id: 'usr_trans_4',
-          email: 'transportista@recursosve.org',
-          password: 'driver123',
-          nombre: 'Carlos Mendoza (Pick-Up 4x4)',
-          rolId: ROLE_MAP[UserRole.TRANSPORTISTA].id,
-          campamentoAsignado: null,
-        },
-        {
-          id: 'usr_trans_4_alt',
-          email: 'transportista@recursos.ve',
-          password: 'driver123',
-          nombre: 'Carlos Mendoza (Pick-Up 4x4)',
-          rolId: ROLE_MAP[UserRole.TRANSPORTISTA].id,
-          campamentoAsignado: null,
-        },
-        {
-          id: 'usr_trans_5',
-          email: 'transportista2@recursosve.org',
-          password: 'driver123',
-          nombre: 'María Briceño (Chuto 10T)',
-          rolId: ROLE_MAP[UserRole.TRANSPORTISTA].id,
-          campamentoAsignado: null,
-        },
-        {
-          id: 'usr_trans_6',
-          email: 'transportista3@recursosve.org',
-          password: 'driver123',
-          nombre: 'Roberto "Tito" Silva (Camión 350)',
-          rolId: ROLE_MAP[UserRole.TRANSPORTISTA].id,
-          campamentoAsignado: null,
-        },
-        {
-          id: 'usr_trans_7',
-          email: 'transportista4@recursosve.org',
-          password: 'driver123',
-          nombre: 'Yorman Gutiérrez (Furgón Médico)',
-          rolId: ROLE_MAP[UserRole.TRANSPORTISTA].id,
-          campamentoAsignado: null,
-        },
-      ];
+    // 2. Seed initial demo users into PostgreSQL
+    const initialUsers = [
+      {
+        id: 'usr_coord_1',
+        email: 'coordinador@recursosve.org',
+        password: 'coord123',
+        nombre: 'Juan P.',
+        rolId: ROLE_MAP[UserRole.COORDINADOR].id,
+        campamentoAsignado: 'Campamento La Guaira #12',
+      },
+      {
+        id: 'usr_brig_2',
+        email: 'brigadista@recursosve.org',
+        password: 'briga123',
+        nombre: 'Pedro R.',
+        rolId: ROLE_MAP[UserRole.BRIGADISTA].id,
+        campamentoAsignado: 'Depósito Las Flores',
+      },
+      {
+        id: 'usr_donante_3',
+        email: 'donante@recursosve.org',
+        password: 'donant123',
+        nombre: 'ONG Farmacéuticos Solidarios',
+        rolId: ROLE_MAP[UserRole.DONANTE].id,
+        campamentoAsignado: null,
+      },
+      {
+        id: 'usr_trans_4',
+        email: 'transportista@recursosve.org',
+        password: 'driver123',
+        nombre: 'Carlos Mendoza (Pick-Up 4x4)',
+        rolId: ROLE_MAP[UserRole.TRANSPORTISTA].id,
+        campamentoAsignado: null,
+      },
+      {
+        id: 'usr_trans_4_alt',
+        email: 'transportista@recursos.ve',
+        password: 'driver123',
+        nombre: 'Carlos Mendoza (Pick-Up 4x4)',
+        rolId: ROLE_MAP[UserRole.TRANSPORTISTA].id,
+        campamentoAsignado: null,
+      },
+      {
+        id: 'usr_trans_5',
+        email: 'transportista2@recursosve.org',
+        password: 'driver123',
+        nombre: 'María Briceño (Chuto 10T)',
+        rolId: ROLE_MAP[UserRole.TRANSPORTISTA].id,
+        campamentoAsignado: null,
+      },
+      {
+        id: 'usr_trans_6',
+        email: 'transportista3@recursosve.org',
+        password: 'driver123',
+        nombre: 'Roberto "Tito" Silva (Camión 350)',
+        rolId: ROLE_MAP[UserRole.TRANSPORTISTA].id,
+        campamentoAsignado: null,
+      },
+      {
+        id: 'usr_trans_7',
+        email: 'transportista4@recursosve.org',
+        password: 'driver123',
+        nombre: 'Yorman Gutiérrez (Furgón Médico)',
+        rolId: ROLE_MAP[UserRole.TRANSPORTISTA].id,
+        campamentoAsignado: null,
+      },
+    ];
 
-      for (const userData of initialUsers) {
+    for (const userData of initialUsers) {
+      const existing = await this.repo.findOneBy({ email: userData.email.toLowerCase() });
+      if (!existing) {
         const entity = this.repo.create({
           id: userData.id,
           email: userData.email,
@@ -121,8 +121,8 @@ export class UserPostgresRepository implements UserRepositoryPort, OnModuleInit 
         });
         await this.repo.save(entity);
       }
-      console.log('✅ Usuarios iniciales sembrados exitosamente en PostgreSQL (tabla users con FK rol_id)');
     }
+    console.log('✅ Usuarios semilla verificados/sembrados exitosamente en PostgreSQL (tabla users)');
   }
 
   async findByEmail(email: string): Promise<User | null> {

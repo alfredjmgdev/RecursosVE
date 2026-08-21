@@ -12,72 +12,72 @@ export class ManageShipmentService implements ManageShipmentUseCase, OnModuleIni
   ) {}
 
   async onModuleInit() {
-    const count = await this.shipmentRepository.count();
-    if (count === 0) {
-      const initialShipments: Array<Partial<DispatchShipmentOrmEntity>> = [
-        {
-          id: 'ship_demo_101',
-          donacionId: 'DON_9901',
-          reporteId: 'REP_LAGUAIRA_01',
-          transportistaId: 'usr_trans_4',
-          transportistaNombre: 'Carlos Mendoza (Pick-Up 4x4)',
-          vehiculoTipo: 'PICKUP_4X4',
-          ubicacionInicial: { lat: 10.605, lng: -66.94, nombre: 'Base Logística Catia La Mar' },
-          origen: { lat: 10.601, lng: -66.932, nombre: 'Centro de Acopio Puerto La Guaira' },
-          destino: { lat: 10.595, lng: -66.915, nombre: 'Refugio Carayaca Emergencia' },
-          estado: 'ASIGNADO',
-          insumoDescripcion: '500L Agua Potable & 20 Kits Médicos de Urgencia',
-        },
-        {
-          id: 'ship_demo_101_alt',
-          donacionId: 'DON_9901_ALT',
-          reporteId: 'REP_LAGUAIRA_01',
-          transportistaId: 'usr_trans_4_alt',
-          transportistaNombre: 'Carlos Mendoza (Pick-Up 4x4)',
-          vehiculoTipo: 'PICKUP_4X4',
-          ubicacionInicial: { lat: 10.605, lng: -66.94, nombre: 'Base Logística Catia La Mar' },
-          origen: { lat: 10.601, lng: -66.932, nombre: 'Centro de Acopio Puerto La Guaira' },
-          destino: { lat: 10.595, lng: -66.915, nombre: 'Refugio Carayaca Emergencia' },
-          estado: 'ASIGNADO',
-          insumoDescripcion: '500L Agua Potable & 20 Kits Médicos de Urgencia',
-        },
-        {
-          id: 'ship_demo_102',
-          donacionId: 'DON_9902',
-          reporteId: 'REP_MACUTO_02',
-          transportistaId: 'usr_trans_5',
-          transportistaNombre: 'María Briceño (Chuto 10T)',
-          vehiculoTipo: 'CHUTO_10T',
-          ubicacionInicial: { lat: 10.585, lng: -66.91, nombre: 'Terminal Maiquetía' },
-          origen: { lat: 10.598, lng: -66.902, nombre: 'Depósito Central Maiquetía' },
-          destino: { lat: 10.612, lng: -66.885, nombre: 'Campamento Refugio Macuto' },
-          estado: 'RECOGIDO',
-          insumoDescripcion: '30 Cajas de Medicamentos Esenciales & Mantas Térmicas',
-          recogidoAt: new Date(),
-        },
-        {
-          id: 'ship_demo_103',
-          donacionId: 'DON_9903',
-          reporteId: 'REP_NAIGUATA_03',
-          transportistaId: 'usr_trans_6',
-          transportistaNombre: 'Roberto "Tito" Silva (Camión 350)',
-          vehiculoTipo: 'CAMION_350',
-          ubicacionInicial: { lat: 10.62, lng: -66.86, nombre: 'Base Logística Caraballeda' },
-          origen: { lat: 10.625, lng: -66.845, nombre: 'Centro de Acopio Naiguatá' },
-          destino: { lat: 10.63, lng: -66.82, nombre: 'Refugio Los Anare' },
-          estado: 'ENTREGADO',
-          insumoDescripcion: '150 Raciones de Comida No Perecedera & Kits de Higiene',
-          recogidoAt: new Date(Date.now() - 3600000),
-          entregadoAt: new Date(),
-        },
-      ];
+    const initialShipments: Array<Partial<DispatchShipmentOrmEntity>> = [
+      {
+        id: 'ship_demo_101',
+        donacionId: 'DON_9901',
+        reporteId: 'REP_LAGUAIRA_01',
+        transportistaId: 'usr_trans_4',
+        transportistaNombre: 'Carlos Mendoza (Pick-Up 4x4)',
+        vehiculoTipo: 'PICKUP_4X4',
+        ubicacionInicial: { lat: 10.605, lng: -66.94, nombre: 'Base Logística Catia La Mar' },
+        origen: { lat: 10.601, lng: -66.932, nombre: 'Centro de Acopio Puerto La Guaira' },
+        destino: { lat: 10.595, lng: -66.915, nombre: 'Refugio Carayaca Emergencia' },
+        estado: 'ASIGNADO',
+        insumoDescripcion: '500L Agua Potable & 20 Kits Médicos de Urgencia',
+      },
+      {
+        id: 'ship_demo_101_alt',
+        donacionId: 'DON_9901_ALT',
+        reporteId: 'REP_LAGUAIRA_01',
+        transportistaId: 'usr_trans_4_alt',
+        transportistaNombre: 'Carlos Mendoza (Pick-Up 4x4)',
+        vehiculoTipo: 'PICKUP_4X4',
+        ubicacionInicial: { lat: 10.605, lng: -66.94, nombre: 'Base Logística Catia La Mar' },
+        origen: { lat: 10.601, lng: -66.932, nombre: 'Centro de Acopio Puerto La Guaira' },
+        destino: { lat: 10.595, lng: -66.915, nombre: 'Refugio Carayaca Emergencia' },
+        estado: 'ASIGNADO',
+        insumoDescripcion: '500L Agua Potable & 20 Kits Médicos de Urgencia',
+      },
+      {
+        id: 'ship_demo_102',
+        donacionId: 'DON_9902',
+        reporteId: 'REP_MACUTO_02',
+        transportistaId: 'usr_trans_5',
+        transportistaNombre: 'María Briceño (Chuto 10T)',
+        vehiculoTipo: 'CHUTO_10T',
+        ubicacionInicial: { lat: 10.585, lng: -66.91, nombre: 'Terminal Maiquetía' },
+        origen: { lat: 10.598, lng: -66.902, nombre: 'Depósito Central Maiquetía' },
+        destino: { lat: 10.612, lng: -66.885, nombre: 'Campamento Refugio Macuto' },
+        estado: 'RECOGIDO',
+        insumoDescripcion: '30 Cajas de Medicamentos Esenciales & Mantas Térmicas',
+        recogidoAt: new Date(),
+      },
+      {
+        id: 'ship_demo_103',
+        donacionId: 'DON_9903',
+        reporteId: 'REP_NAIGUATA_03',
+        transportistaId: 'usr_trans_6',
+        transportistaNombre: 'Roberto "Tito" Silva (Camión 350)',
+        vehiculoTipo: 'CAMION_350',
+        ubicacionInicial: { lat: 10.62, lng: -66.86, nombre: 'Base Logística Caraballeda' },
+        origen: { lat: 10.625, lng: -66.845, nombre: 'Centro de Acopio Naiguatá' },
+        destino: { lat: 10.63, lng: -66.82, nombre: 'Refugio Los Anare' },
+        estado: 'ENTREGADO',
+        insumoDescripcion: '150 Raciones de Comida No Perecedera & Kits de Higiene',
+        recogidoAt: new Date(Date.now() - 3600000),
+        entregadoAt: new Date(),
+      },
+    ];
 
-      for (const shipData of initialShipments) {
+    for (const shipData of initialShipments) {
+      const existing = await this.shipmentRepository.findOneBy({ id: shipData.id });
+      if (!existing) {
         const entity = this.shipmentRepository.create(shipData);
         await this.shipmentRepository.save(entity);
       }
-      console.log('✅ Despachos iniciales sembrados exitosamente en PostgreSQL (tabla dispatch_shipments)');
     }
+    console.log('✅ Despachos semilla verificados/sembrados exitosamente en PostgreSQL (tabla dispatch_shipments)');
   }
 
   async assignSmartShipment(command: AssignShipmentCommand): Promise<DispatchShipmentDto> {
