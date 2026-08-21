@@ -68,19 +68,6 @@ export class ManageShipmentService implements ManageShipmentUseCase, OnModuleIni
         recogidoAt: new Date(Date.now() - 3600000),
         entregadoAt: new Date(),
       },
-      {
-        id: 'a1111111-1111-4111-8111-111111111105',
-        donacionId: 'DON_9904',
-        reporteId: 'REP_CARAYACA_04',
-        transportistaId: 'usr_trans_7',
-        transportistaNombre: 'Yorman Gutiérrez (Furgón Médico)',
-        vehiculoTipo: 'FURGON_REFRIGERADO',
-        ubicacionInicial: { lat: 10.61, lng: -66.92, nombre: 'Centro Médico La Guaira' },
-        origen: { lat: 10.601, lng: -66.932, nombre: 'Centro de Acopio Puerto La Guaira' },
-        destino: { lat: 10.590, lng: -66.950, nombre: 'Hospital de Campaña Carayaca' },
-        estado: 'ASIGNADO',
-        insumoDescripcion: '50 Cajas de Insulina & Insumos Quirúrgicos de Urgencia',
-      },
     ];
 
     for (const shipData of initialShipments) {
@@ -165,29 +152,7 @@ export class ManageShipmentService implements ManageShipmentUseCase, OnModuleIni
     });
 
     if (!shipment) {
-      const driverMap: Record<string, { nombre: string; vehiculo: string; ubicacion: string; lat: number; lng: number; insumos: string }> = {
-        usr_trans_4: { nombre: 'Carlos Mendoza (Pick-Up 4x4)', vehiculo: 'PICKUP_4X4', ubicacion: 'Base Logística Catia La Mar', lat: 10.605, lng: -66.94, insumos: '500L Agua Potable & 20 Kits Médicos de Urgencia' },
-        usr_trans_4_alt: { nombre: 'Carlos Mendoza (Pick-Up 4x4)', vehiculo: 'PICKUP_4X4', ubicacion: 'Base Logística Catia La Mar', lat: 10.605, lng: -66.94, insumos: '500L Agua Potable & 20 Kits Médicos de Urgencia' },
-        usr_trans_5: { nombre: 'María Briceño (Chuto 10T)', vehiculo: 'CHUTO_10T', ubicacion: 'Terminal Maiquetía', lat: 10.585, lng: -66.91, insumos: '30 Cajas de Medicamentos Esenciales & Mantas Térmicas' },
-        usr_trans_6: { nombre: 'Roberto "Tito" Silva (Camión 350)', vehiculo: 'CAMION_350', ubicacion: 'Base Logística Caraballeda', lat: 10.62, lng: -66.86, insumos: '150 Raciones de Comida No Perecedera & Kits de Higiene' },
-        usr_trans_7: { nombre: 'Yorman Gutiérrez (Furgón Médico)', vehiculo: 'FURGON_REFRIGERADO', ubicacion: 'Centro Médico La Guaira', lat: 10.61, lng: -66.92, insumos: '50 Cajas de Insulina & Insumos Quirúrgicos de Urgencia' },
-      };
-      const driver = driverMap[transportistaId] || { nombre: 'Transportista Logístico', vehiculo: 'CAMION_350', ubicacion: 'Base Logística La Guaira', lat: 10.605, lng: -66.94, insumos: 'Insumos de Emergencia' };
-
-      return {
-        id: `ship_fallback_${transportistaId}`,
-        donacionId: 'DON_9904',
-        reporteId: 'REP_CARAYACA_04',
-        transportistaId,
-        transportistaNombre: driver.nombre,
-        vehiculoTipo: driver.vehiculo,
-        ubicacionInicial: { lat: driver.lat, lng: driver.lng, nombre: driver.ubicacion },
-        origen: { lat: 10.601, lng: -66.932, nombre: 'Centro de Acopio Puerto La Guaira' },
-        destino: { lat: 10.590, lng: -66.950, nombre: 'Hospital de Campaña Carayaca' },
-        estado: 'ASIGNADO',
-        insumoDescripcion: driver.insumos,
-        createdAt: new Date(),
-      };
+      return null;
     }
 
     return this.mapToDto(shipment);

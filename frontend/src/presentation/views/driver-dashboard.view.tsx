@@ -63,10 +63,30 @@ export const DriverDashboardView: React.FC = () => {
 
   // Update map markers & polylines smoothly without destroying map or resetting zoom
   useEffect(() => {
-    if (!mapInstanceRef.current || !layerGroupRef.current || !shipment) return;
+    if (!mapInstanceRef.current || !layerGroupRef.current) return;
 
     const layerGroup = layerGroupRef.current;
     layerGroup.clearLayers();
+
+    if (!shipment) {
+      // Driver in Stand-by / Available state
+      const driverStandbyIcon = L.divIcon({
+        className: 'custom-map-pin',
+        html: `<div style="background-color:#10B981; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid white; box-shadow:0 4px 12px rgba(16,185,129,0.5); color:white; font-weight:bold; font-size:18px;">🚚</div>`,
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+      });
+
+      const standbyMarker = L.marker([10.61, -66.92], { icon: driverStandbyIcon })
+        .bindPopup(`<b>${currentUser?.nombre || 'Unidad Logística'}</b><br/><span style="color:#10B981; font-weight:bold;">🟢 Estado: Disponible (En espera de ruta)</span>`);
+      layerGroup.addLayer(standbyMarker);
+
+      if (isInitialFitRef.current) {
+        mapInstanceRef.current.setView([10.61, -66.92], 13);
+        isInitialFitRef.current = false;
+      }
+      return;
+    }
 
     // Custom DivIcons
     const driverIcon = L.divIcon({
@@ -186,9 +206,9 @@ export const DriverDashboardView: React.FC = () => {
           </div>
         </div>
 
-        {shipment && (
-          <div className="flex items-center gap-3 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800">
-            <span className="text-xs text-slate-400">Estado Misión:</span>
+        <div className="flex items-center gap-3 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800">
+          <span className="text-xs text-slate-400">Estado Misión:</span>
+          {shipment ? (
             <span
               className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
                 shipment.estado === 'ASIGNADO'
@@ -202,8 +222,13 @@ export const DriverDashboardView: React.FC = () => {
               {shipment.estado === 'RECOGIDO' && '🔵 EN TRÁNSITO'}
               {shipment.estado === 'ENTREGADO' && '🟢 ENTREGADO'}
             </span>
-          </div>
-        )}
+          ) : (
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              🟢 DISPONIBLE
+            </span>
+          )}
+        </div>
       </div>
 
       {loading ? (
@@ -211,117 +236,138 @@ export const DriverDashboardView: React.FC = () => {
           <Navigation className="w-8 h-8 animate-spin text-cyan-400 mx-auto" />
           <p className="text-sm font-semibold">Cargando misión asignada por la IA...</p>
         </div>
-      ) : shipment ? (
+      ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           
           {/* Left Panel: Mission Info & Actions */}
           <div className="space-y-6 md:col-span-1">
             
-            {/* Shipment Summary Card */}
-            <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 pb-2">
-                Detalle del Insumo Logístico
-              </h3>
+            {shipment ? (
+              <>
+                {/* Shipment Summary Card */}
+                <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 pb-2">
+                    Detalle del Insumo Logístico
+                  </h3>
 
-              <div className="flex items-start gap-3">
-                <Package className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-3">
+                    <Package className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="text-xs text-slate-400 block">Carga Asignada</span>
+                      <span className="text-sm font-bold text-white leading-tight">
+                        {shipment.insumoDescripcion || 'Insumos Médicos & Agua Potable'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-800/80">
+                    <span className="text-slate-400">Vehículo Asignado:</span>
+                    <span className="font-semibold text-slate-200">{shipment.vehiculoTipo}</span>
+                  </div>
+                </div>
+
+                {/* Route Milestones */}
+                <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 pb-2">
+                    Trayectoria de 3 Puntos
+                  </h3>
+
+                  {/* Point 1: Initial Driver Position */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/40 flex items-center justify-center text-xs shrink-0 font-bold">
+                      1
+                    </div>
+                    <div>
+                      <span className="text-[11px] text-blue-400 font-semibold block uppercase">Posición Inicial Chofer</span>
+                      <span className="text-xs font-bold text-slate-200">{shipment.ubicacionInicial.nombre}</span>
+                    </div>
+                  </div>
+
+                  {/* Arrow */}
+                  <div className="pl-3.5 border-l-2 border-dashed border-slate-800 ml-3 py-1" />
+
+                  {/* Point 2: Pickup Origin */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-xs shrink-0 font-bold">
+                      2
+                    </div>
+                    <div>
+                      <span className="text-[11px] text-emerald-400 font-semibold block uppercase">Origen (Recogida Insumo)</span>
+                      <span className="text-xs font-bold text-slate-200">{shipment.origen.nombre}</span>
+                    </div>
+                  </div>
+
+                  {/* Arrow */}
+                  <div className="pl-3.5 border-l-2 border-dashed border-slate-800 ml-3 py-1" />
+
+                  {/* Point 3: Refuge Destination */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full bg-red-500/20 text-red-400 border border-red-500/40 flex items-center justify-center text-xs shrink-0 font-bold">
+                      3
+                    </div>
+                    <div>
+                      <span className="text-[11px] text-red-400 font-semibold block uppercase">Destino (Entrega Refugio)</span>
+                      <span className="text-xs font-bold text-slate-200">{shipment.destino.nombre}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons for Driver */}
+                <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                    Acciones en Terreno
+                  </h3>
+
+                  {shipment.estado === 'ASIGNADO' && (
+                    <button
+                      onClick={() => handleStatusChange('RECOGIDO')}
+                      disabled={updating}
+                      className="w-full py-3 px-4 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                    >
+                      <Package className="w-5 h-5" />
+                      <span>{updating ? 'Actualizando...' : '📦 Confirmar Recogida de Insumo'}</span>
+                    </button>
+                  )}
+
+                  {shipment.estado === 'RECOGIDO' && (
+                    <button
+                      onClick={() => handleStatusChange('ENTREGADO')}
+                      disabled={updating}
+                      className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                    >
+                      <CheckCircle2 className="w-5 h-5" />
+                      <span>{updating ? 'Actualizando...' : '✅ Confirmar Entrega en Destino'}</span>
+                    </button>
+                  )}
+
+                  {shipment.estado === 'ENTREGADO' && (
+                    <div className="bg-emerald-950/40 border border-emerald-800/60 p-4 rounded-xl text-center space-y-2">
+                      <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
+                      <p className="text-xs text-emerald-200 font-semibold">
+                        ¡Misión completada con éxito! La donación fue entregada al campamento.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              /* Available / Stand-by State Card */
+              <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 text-center">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 mx-auto flex items-center justify-center">
+                  <Truck className="w-6 h-6" />
+                </div>
                 <div>
-                  <span className="text-xs text-slate-400 block">Carga Asignada</span>
-                  <span className="text-sm font-bold text-white leading-tight">
-                    {shipment.insumoDescripcion || 'Insumos Médicos & Agua Potable'}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-800/80">
-                <span className="text-slate-400">Vehículo Asignado:</span>
-                <span className="font-semibold text-slate-200">{shipment.vehiculoTipo}</span>
-              </div>
-            </div>
-
-            {/* Route Milestones */}
-            <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 pb-2">
-                Trayectoria de 3 Puntos
-              </h3>
-
-              {/* Point 1: Initial Driver Position */}
-              <div className="flex items-start gap-3">
-                <div className="w-7 h-7 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/40 flex items-center justify-center text-xs shrink-0 font-bold">
-                  1
-                </div>
-                <div>
-                  <span className="text-[11px] text-blue-400 font-semibold block uppercase">Posición Inicial Chofer</span>
-                  <span className="text-xs font-bold text-slate-200">{shipment.ubicacionInicial.nombre}</span>
-                </div>
-              </div>
-
-              {/* Arrow */}
-              <div className="pl-3.5 border-l-2 border-dashed border-slate-800 ml-3 py-1" />
-
-              {/* Point 2: Pickup Origin */}
-              <div className="flex items-start gap-3">
-                <div className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-xs shrink-0 font-bold">
-                  2
-                </div>
-                <div>
-                  <span className="text-[11px] text-emerald-400 font-semibold block uppercase">Origen (Recogida Insumo)</span>
-                  <span className="text-xs font-bold text-slate-200">{shipment.origen.nombre}</span>
-                </div>
-              </div>
-
-              {/* Arrow */}
-              <div className="pl-3.5 border-l-2 border-dashed border-slate-800 ml-3 py-1" />
-
-              {/* Point 3: Refuge Destination */}
-              <div className="flex items-start gap-3">
-                <div className="w-7 h-7 rounded-full bg-red-500/20 text-red-400 border border-red-500/40 flex items-center justify-center text-xs shrink-0 font-bold">
-                  3
-                </div>
-                <div>
-                  <span className="text-[11px] text-red-400 font-semibold block uppercase">Destino (Entrega Refugio)</span>
-                  <span className="text-xs font-bold text-slate-200">{shipment.destino.nombre}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Action Buttons for Driver */}
-            <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-                Acciones en Terreno
-              </h3>
-
-              {shipment.estado === 'ASIGNADO' && (
-                <button
-                  onClick={() => handleStatusChange('RECOGIDO')}
-                  disabled={updating}
-                  className="w-full py-3 px-4 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  <Package className="w-5 h-5" />
-                  <span>{updating ? 'Actualizando...' : '📦 Confirmar Recogida de Insumo'}</span>
-                </button>
-              )}
-
-              {shipment.estado === 'RECOGIDO' && (
-                <button
-                  onClick={() => handleStatusChange('ENTREGADO')}
-                  disabled={updating}
-                  className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span>{updating ? 'Actualizando...' : '✅ Confirmar Entrega en Destino'}</span>
-                </button>
-              )}
-
-              {shipment.estado === 'ENTREGADO' && (
-                <div className="bg-emerald-950/40 border border-emerald-800/60 p-4 rounded-xl text-center space-y-2">
-                  <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
-                  <p className="text-xs text-emerald-200 font-semibold">
-                    ¡Misión completada con éxito! La donación fue entregada al campamento.
+                  <h3 className="text-base font-bold text-white">Unidad Logística en Stand-By</h3>
+                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                    Actualmente no tenés misiones activas asignadas. Tu unidad aparece como <strong className="text-emerald-400">DISPONIBLE</strong> en el mapa de control logístico.
                   </p>
                 </div>
-              )}
-            </div>
+                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800/80 text-left space-y-1 text-xs">
+                  <span className="text-slate-400 block font-semibold">Chofer Autenticado:</span>
+                  <span className="text-white font-bold block">{currentUser?.nombre || 'Yorman Gutiérrez (Furgón Médico)'}</span>
+                </div>
+              </div>
+            )}
 
           </div>
 
@@ -331,11 +377,11 @@ export const DriverDashboardView: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Navigation className="w-4 h-4 text-cyan-400" />
                 <span className="text-xs font-bold text-white uppercase tracking-wider">
-                  Mapa del Despacho Asignado
+                  {shipment ? 'Mapa del Despacho Asignado' : 'Posición Operativa en Terreno'}
                 </span>
               </div>
               <span className="text-[11px] text-slate-400">
-                Puntos: 🔵 Chofer ➔ 🟢 Acopio ➔ 🔴 Refugio
+                {shipment ? 'Puntos: 🔵 Chofer ➔ 🟢 Acopio ➔ 🔴 Refugio' : '🟢 Estado: Unidad en espera'}
               </span>
             </div>
 
@@ -345,7 +391,7 @@ export const DriverDashboardView: React.FC = () => {
           </div>
 
         </div>
-      ) : null}
+      )}
 
     </div>
   );
