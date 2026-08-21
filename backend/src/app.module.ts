@@ -8,6 +8,7 @@ import { CollectionCenterOrmEntity } from './infrastructure/adapters/out/persist
 import { DisasterTypeOrmEntity } from './infrastructure/adapters/out/persistence/postgres/entities/disaster-type.orm-entity';
 import { VenezuelaStateOrmEntity } from './infrastructure/adapters/out/persistence/postgres/entities/venezuela-state.orm-entity';
 import { ReportFeedbackOrmEntity } from './infrastructure/adapters/out/persistence/postgres/entities/report-feedback.orm-entity';
+import { DispatchShipmentOrmEntity } from './infrastructure/adapters/out/persistence/postgres/entities/dispatch-shipment.orm-entity';
 
 import { ReportPostgresRepository } from './infrastructure/adapters/out/persistence/postgres/repositories/report.postgres-repository';
 import { InventoryPostgresRepository } from './infrastructure/adapters/out/persistence/postgres/repositories/inventory.postgres-repository';
@@ -41,6 +42,7 @@ import { MANAGE_INFRASTRUCTURE_USE_CASE } from './domain/ports/in/manage-infrast
 import { PROCESS_NLP_REPORT_USE_CASE } from './domain/ports/in/process-nlp-report.use-case';
 import { CALCULATE_OPTIMAL_ROUTE_USE_CASE } from './domain/ports/in/calculate-optimal-route.use-case';
 import { SUBMIT_FEEDBACK_USE_CASE } from './domain/ports/in/submit-feedback.use-case';
+import { ManageShipmentUseCase } from './domain/ports/in/manage-shipment.use-case';
 
 import { CreateReportService } from './application/services/create-report.service';
 import { GetActiveReportsService } from './application/services/get-active-reports.service';
@@ -54,6 +56,7 @@ import { ManageInfrastructureService } from './application/services/manage-infra
 import { ProcessNlpReportService } from './application/services/process-nlp-report.service';
 import { CalculateOptimalRouteService } from './application/services/calculate-optimal-route.service';
 import { SubmitFeedbackService } from './application/services/submit-feedback.service';
+import { ManageShipmentService } from './application/services/manage-shipment.service';
 
 import { ReportsController } from './infrastructure/adapters/in/http/reports.controller';
 import { AnalyticsController } from './infrastructure/adapters/in/http/analytics.controller';
@@ -62,6 +65,7 @@ import { DonationsController } from './infrastructure/adapters/in/http/donations
 import { AuthController } from './infrastructure/adapters/in/http/auth.controller';
 import { InfrastructureController } from './infrastructure/adapters/in/http/infrastructure.controller';
 import { RoutesController } from './infrastructure/adapters/in/http/routes.controller';
+import { ShipmentsController } from './infrastructure/adapters/in/http/shipments.controller';
 
 const ORM_ENTITIES = [
   NeedReportOrmEntity,
@@ -71,6 +75,7 @@ const ORM_ENTITIES = [
   DisasterTypeOrmEntity,
   VenezuelaStateOrmEntity,
   ReportFeedbackOrmEntity,
+  DispatchShipmentOrmEntity,
 ];
 
 @Module({
@@ -97,6 +102,7 @@ const ORM_ENTITIES = [
     AuthController,
     InfrastructureController,
     RoutesController,
+    ShipmentsController,
   ],
   providers: [
     CalculateOptimalRouteService,
@@ -193,6 +199,11 @@ const ORM_ENTITIES = [
     {
       provide: SUBMIT_FEEDBACK_USE_CASE,
       useClass: SubmitFeedbackService,
+    },
+    ManageShipmentService,
+    {
+      provide: ManageShipmentUseCase,
+      useClass: ManageShipmentService,
     },
   ],
 })

@@ -2,6 +2,7 @@ export enum UserRole {
   COORDINADOR = 'COORDINADOR',
   BRIGADISTA = 'BRIGADISTA',
   DONANTE = 'DONANTE',
+  TRANSPORTISTA = 'TRANSPORTISTA',
 }
 
 export class User {
