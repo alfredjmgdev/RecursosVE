@@ -50,6 +50,10 @@ export class ApiClientAdapter implements ApiClientPort {
       userRole = UserRole.BRIGADISTA;
       userName = 'Pedro R.';
       campamento = 'Depósito Las Flores';
+    } else if (lowerEmail.includes('transportista')) {
+      userRole = UserRole.TRANSPORTISTA;
+      userName = 'Carlos Mendoza (Chofer 4x4)';
+      campamento = undefined;
     }
 
     return {
