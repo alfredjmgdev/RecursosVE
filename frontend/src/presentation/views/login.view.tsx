@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRecursosVE } from '../../application/context/recursosve-context';
 import { useRouter } from 'next/navigation';
+import { UserRole } from '../../domain/entities/user.entity';
 import { Shield, Truck, HeartHandshake, LogIn, Lock, Mail, AlertCircle, ArrowRight, HeartPulse } from 'lucide-react';
 
 export const LoginView: React.FC = () => {
@@ -19,12 +20,13 @@ export const LoginView: React.FC = () => {
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      await login(email, password);
-      const lowerEmail = email.toLowerCase();
-      if (lowerEmail.includes('donante')) {
-        router.replace('/donar');
-      } else if (lowerEmail.includes('transportista')) {
+      const loggedUser = await login(email, password);
+      if (loggedUser.rol === UserRole.TRANSPORTISTA) {
         router.replace('/transportista');
+      } else if (loggedUser.rol === UserRole.DONANTE) {
+        router.replace('/donar');
+      } else if (loggedUser.rol === UserRole.BRIGADISTA) {
+        router.replace('/reportar');
       } else {
         router.replace('/');
       }

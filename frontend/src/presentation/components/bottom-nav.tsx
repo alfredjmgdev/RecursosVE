@@ -11,7 +11,7 @@ export const BottomNav: React.FC = () => {
   const pathname = usePathname();
   const { currentUser, selectedStateId, venezuelaStates } = useRecursosVE();
 
-  const isSelectionPage = pathname === '/' || pathname === '/seleccionar-estado';
+  const isSelectionPage = (pathname === '/' || pathname === '/seleccionar-estado') && currentUser?.rol === UserRole.COORDINADOR;
 
   if (!currentUser || isSelectionPage) {
     return null;
@@ -29,7 +29,7 @@ export const BottomNav: React.FC = () => {
     { label: 'Panel', href: dashboardHref, icon: LayoutDashboard, roles: [UserRole.COORDINADOR] },
     { label: 'Misión', href: '/transportista', icon: Truck, roles: [UserRole.TRANSPORTISTA] },
     { label: 'Reportar', href: reportarHref, icon: PlusCircle, roles: [UserRole.COORDINADOR, UserRole.BRIGADISTA] },
-    { label: 'Donar', href: donarHref, icon: HeartHandshake, roles: [UserRole.COORDINADOR, UserRole.BRIGADISTA, UserRole.DONANTE] },
+    { label: 'Donar', href: donarHref, icon: HeartHandshake, roles: [UserRole.COORDINADOR, UserRole.DONANTE] },
     { label: 'IA Aprendizaje', href: '/aprendizaje', icon: BrainCircuit, roles: [UserRole.COORDINADOR] },
   ];
 

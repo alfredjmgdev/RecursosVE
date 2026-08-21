@@ -59,7 +59,7 @@ export interface CustomDesastre {
 interface RecursosVEContextType {
   currentUser: User | null;
   authChecked: boolean;
-  login: (email: string, pass: string) => Promise<void>;
+  login: (email: string, pass: string) => Promise<User>;
   logout: () => void;
   gaps: GapAnalysisResult[];
   donations: DonationFrontend[];
@@ -184,7 +184,7 @@ export const RecursosVEProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return () => clearInterval(interval);
   }, []);
 
-  const login = async (email: string, pass: string) => {
+  const login = async (email: string, pass: string): Promise<User> => {
     setIsLoading(true);
     try {
       const res = await apiClient.login(email, pass);
@@ -192,6 +192,7 @@ export const RecursosVEProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       if (typeof window !== 'undefined') {
         localStorage.setItem('recursosve_user', JSON.stringify(res.user));
       }
+      return res.user;
     } finally {
       setIsLoading(false);
     }

@@ -24,12 +24,21 @@ export const Header: React.FC = () => {
   const reportarHref = selectedStateCode ? `/estado/${selectedStateCode}/reportar` : '/reportar';
   const donarHref = selectedStateCode ? `/estado/${selectedStateCode}/donar` : '/donar';
 
+  const getHomeHref = () => {
+    if (!currentUser) return '/login';
+    if (currentUser.rol === UserRole.TRANSPORTISTA) return '/transportista';
+    if (currentUser.rol === UserRole.DONANTE) return donarHref;
+    if (currentUser.rol === UserRole.BRIGADISTA) return reportarHref;
+    if (selectedStateCode) return `/estado/${selectedStateCode}`;
+    return '/';
+  };
+
   const navItems = [
-    { label: 'Seleccionar Estado', href: '/', icon: Globe, roles: [UserRole.COORDINADOR, UserRole.BRIGADISTA] },
+    { label: 'Seleccionar Estado', href: '/', icon: Globe, roles: [UserRole.COORDINADOR] },
     { label: 'Panel del Coordinador', href: dashboardHref, icon: LayoutDashboard, roles: [UserRole.COORDINADOR] },
     { label: 'Misión del Transportista', href: '/transportista', icon: Truck, roles: [UserRole.TRANSPORTISTA] },
     { label: 'Reportar Necesidad', href: reportarHref, icon: PlusCircle, roles: [UserRole.COORDINADOR, UserRole.BRIGADISTA] },
-    { label: 'Portal de Donantes', href: donarHref, icon: HeartHandshake, roles: [UserRole.COORDINADOR, UserRole.BRIGADISTA, UserRole.DONANTE] },
+    { label: 'Portal de Donantes', href: donarHref, icon: HeartHandshake, roles: [UserRole.COORDINADOR, UserRole.DONANTE] },
     { label: 'IA & Aprendizaje', href: '/aprendizaje', icon: BrainCircuit, roles: [UserRole.COORDINADOR] },
   ];
 
@@ -52,13 +61,13 @@ export const Header: React.FC = () => {
     }
   };
 
-  const isSelectionPage = pathname === '/' || pathname === '/seleccionar-estado';
+  const isSelectionPage = (pathname === '/' || pathname === '/seleccionar-estado') && currentUser.rol === UserRole.COORDINADOR;
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b-2 border-red-600 text-slate-900 px-4 sm:px-6 py-2.5 shadow-md">
       <div className="w-full mx-auto flex items-center justify-between">
         {/* Brand Logo & Name */}
-        <Link href="/" className="flex items-center space-x-3 group">
+        <Link href={getHomeHref()} className="flex items-center space-x-3 group">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-red-600 via-red-500 to-amber-400 flex items-center justify-center text-white shadow-md shadow-red-500/25 group-hover:scale-105 transition-transform">
             <HeartPulse className="w-6 h-6 stroke-[2.5]" />
           </div>
