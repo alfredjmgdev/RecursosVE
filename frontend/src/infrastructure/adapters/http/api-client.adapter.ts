@@ -35,39 +35,65 @@ export class ApiClientAdapter implements ApiClientPort {
       if (res.ok) {
         return await res.json();
       }
-    } catch {
-      // Fallback mock authentication for dev/offline mode
+      const errorData = await res.json().catch(() => ({}));
+      const message = Array.isArray(errorData.message)
+        ? errorData.message.join(', ')
+        : errorData.message || 'Credenciales inválidas. Verifique su correo y contraseña.';
+      throw new Error(message);
+    } catch (err: any) {
+      // If error is a response validation error (not network error), throw it immediately
+      if (err.message && !err.message.toLowerCase().includes('failed to fetch')) {
+        throw err;
+      }
+      
+      // Offline fallback: validate credentials strictly if backend is unreachable
+      const validPasswords: Record<string, string> = {
+        'coordinador@recursosve.org': 'coord123',
+        'brigadista@recursosve.org': 'briga123',
+        'donante@recursosve.org': 'donant123',
+        'transportista@recursosve.org': 'driver123',
+        'transportista@recursos.ve': 'driver123',
+        'transportista2@recursosve.org': 'driver123',
+        'transportista3@recursosve.org': 'driver123',
+        'transportista4@recursosve.org': 'driver123',
+      };
+      
+      const lowerEmail = email.toLowerCase();
+      const expectedPass = validPasswords[lowerEmail] || '123456';
+      
+      if (password !== expectedPass) {
+        throw new Error('Contraseña incorrecta. Verifique sus datos de acceso.');
+      }
+
+      let userRole = UserRole.COORDINADOR;
+      let userName = 'Juan P.';
+      let campamento: string | undefined = 'Campamento La Guaira #12';
+
+      if (lowerEmail.includes('donante')) {
+        userRole = UserRole.DONANTE;
+        userName = 'ONG Farmacéuticos Solidarios';
+        campamento = undefined;
+      } else if (lowerEmail.includes('brigadista')) {
+        userRole = UserRole.BRIGADISTA;
+        userName = 'Pedro R.';
+        campamento = 'Depósito Las Flores';
+      } else if (lowerEmail.includes('transportista')) {
+        userRole = UserRole.TRANSPORTISTA;
+        userName = 'Carlos Mendoza (Pick-Up 4x4)';
+        campamento = undefined;
+      }
+
+      return {
+        user: {
+          id: `usr_${Date.now()}`,
+          email,
+          nombre: userName,
+          rol: userRole,
+          campamentoAsignado: campamento,
+        },
+        token: `token_mock_${Date.now()}`,
+      };
     }
-
-    const lowerEmail = email.toLowerCase();
-    let userRole = UserRole.COORDINADOR;
-    let userName = 'Juan P.';
-    let campamento: string | undefined = 'Campamento La Guaira #12';
-
-    if (lowerEmail.includes('donante')) {
-      userRole = UserRole.DONANTE;
-      userName = 'ONG Farmacéuticos Solidarios';
-      campamento = undefined;
-    } else if (lowerEmail.includes('brigadista')) {
-      userRole = UserRole.BRIGADISTA;
-      userName = 'Pedro R.';
-      campamento = 'Depósito Las Flores';
-    } else if (lowerEmail.includes('transportista')) {
-      userRole = UserRole.TRANSPORTISTA;
-      userName = 'Carlos Mendoza (Chofer 4x4)';
-      campamento = undefined;
-    }
-
-    return {
-      user: {
-        id: `usr_${Date.now()}`,
-        email,
-        nombre: userName,
-        rol: userRole,
-        campamentoAsignado: campamento,
-      },
-      token: `token_mock_${Date.now()}`,
-    };
   }
 
   private localCreatedGaps: GapAnalysisResult[] = [];
