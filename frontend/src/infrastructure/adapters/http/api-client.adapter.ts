@@ -69,6 +69,7 @@ export class ApiClientAdapter implements ApiClientPort {
       let userName = 'Juan P.';
       let campamento: string | undefined = 'Campamento La Guaira #12';
 
+      let userId = `usr_${Date.now()}`;
       if (lowerEmail.includes('donante')) {
         userRole = UserRole.DONANTE;
         userName = 'ONG Farmacéuticos Solidarios';
@@ -79,13 +80,25 @@ export class ApiClientAdapter implements ApiClientPort {
         campamento = 'Depósito Las Flores';
       } else if (lowerEmail.includes('transportista')) {
         userRole = UserRole.TRANSPORTISTA;
-        userName = 'Carlos Mendoza (Pick-Up 4x4)';
         campamento = undefined;
+        if (lowerEmail.includes('4')) {
+          userName = 'Yorman Gutiérrez (Furgón Médico)';
+          userId = 'usr_trans_7';
+        } else if (lowerEmail.includes('3')) {
+          userName = 'Roberto "Tito" Silva (Camión 350)';
+          userId = 'usr_trans_6';
+        } else if (lowerEmail.includes('2')) {
+          userName = 'María Briceño (Chuto 10T)';
+          userId = 'usr_trans_5';
+        } else {
+          userName = 'Carlos Mendoza (Pick-Up 4x4)';
+          userId = 'usr_trans_4';
+        }
       }
 
       return {
         user: {
-          id: `usr_${Date.now()}`,
+          id: userId,
           email,
           nombre: userName,
           rol: userRole,

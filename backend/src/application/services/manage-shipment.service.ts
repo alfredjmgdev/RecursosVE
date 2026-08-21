@@ -70,6 +70,9 @@ export class ManageShipmentService implements ManageShipmentUseCase, OnModuleIni
       },
     ];
 
+    // Explicitly clear any legacy seeded shipment for usr_trans_7 so Yorman is DISPONIBLE by default
+    await this.shipmentRepository.delete({ transportistaId: 'usr_trans_7' });
+
     for (const shipData of initialShipments) {
       const existing = await this.shipmentRepository.findOneBy({ transportistaId: shipData.transportistaId });
       if (!existing) {
