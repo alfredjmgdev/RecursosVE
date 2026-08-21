@@ -108,6 +108,20 @@ export default function SeleccionarEstadoView() {
   const { venezuelaStates, customAcopios, customCampamentos, customDesastres, setSelectedStateId, currentUser } = useRecursosVE();
   const [search, setSearch] = useState('');
 
+  React.useEffect(() => {
+    if (currentUser?.rol === UserRole.TRANSPORTISTA) {
+      router.replace('/transportista');
+    } else if (currentUser?.rol === UserRole.DONANTE) {
+      router.replace('/donar');
+    } else if (currentUser?.rol === UserRole.BRIGADISTA) {
+      router.replace('/reportar');
+    }
+  }, [currentUser, router]);
+
+  if (currentUser?.rol && currentUser.rol !== UserRole.COORDINADOR) {
+    return null;
+  }
+
   const states = venezuelaStates.length > 0 ? venezuelaStates : FALLBACK_STATES;
 
   const filtered = useMemo(() => {

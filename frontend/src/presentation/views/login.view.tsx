@@ -20,14 +20,13 @@ export const LoginView: React.FC = () => {
     setErrorMessage(null);
     try {
       await login(email, password);
-      // Redirect based on role if known, or to main dashboard
       const lowerEmail = email.toLowerCase();
       if (lowerEmail.includes('donante')) {
-        router.push('/donar');
+        router.replace('/donar');
       } else if (lowerEmail.includes('transportista')) {
-        router.push('/transportista');
+        router.replace('/transportista');
       } else {
-        router.push('/');
+        router.replace('/');
       }
     } catch (err: any) {
       setErrorMessage(err.message || 'Error al iniciar sesión. Verifique sus credenciales.');
