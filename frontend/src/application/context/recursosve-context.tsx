@@ -73,6 +73,8 @@ interface RecursosVEContextType {
   processNlpReport: (text: string) => Promise<import('../../domain/ports/api-client.port').NlpExtractedEntityFrontend>;
   calculateRoute: (payload: import('../../domain/ports/api-client.port').CalculateRoutePayloadFrontend) => Promise<import('../../domain/ports/api-client.port').RouteCalculationFrontend>;
   submitReportFeedback: (payload: import('../../domain/ports/api-client.port').SubmitFeedbackPayloadFrontend) => Promise<import('../../domain/ports/api-client.port').FeedbackResultFrontend>;
+  getAssignedShipment: (transportistaId: string) => Promise<import('../../domain/ports/api-client.port').DispatchShipmentFrontend | null>;
+  updateShipmentStatus: (id: string, nuevoEstado: 'RECOGIDO' | 'ENTREGADO') => Promise<import('../../domain/ports/api-client.port').DispatchShipmentFrontend>;
 
   // Custom Infrastructure & Disaster State
   customAcopios: CustomAcopio[];
@@ -281,6 +283,8 @@ export const RecursosVEProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           await refreshData(true);
           return res;
         },
+        getAssignedShipment: (transportistaId) => apiClient.getAssignedShipment(transportistaId),
+        updateShipmentStatus: (id, nuevoEstado) => apiClient.updateShipmentStatus(id, nuevoEstado),
         customAcopios,
         customCampamentos,
         customDesastres,

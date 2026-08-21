@@ -179,6 +179,23 @@ export interface FeedbackResultFrontend {
   createdAt: string;
 }
 
+export interface DispatchShipmentFrontend {
+  id: string;
+  donacionId?: string;
+  reporteId?: string;
+  transportistaId: string;
+  transportistaNombre: string;
+  vehiculoTipo: string;
+  ubicacionInicial: { lat: number; lng: number; nombre?: string };
+  origen: { lat: number; lng: number; nombre: string };
+  destino: { lat: number; lng: number; nombre: string };
+  estado: 'ASIGNADO' | 'RECOGIDO' | 'ENTREGADO';
+  insumoDescripcion?: string;
+  createdAt: string;
+  recogidoAt?: string;
+  entregadoAt?: string;
+}
+
 export interface ApiClientPort {
   login(email: string, password: string): Promise<AuthResultFrontend>;
   getGapAnalysis(): Promise<GapAnalysisResult[]>;
@@ -190,6 +207,9 @@ export interface ApiClientPort {
   processNlpReport(text: string): Promise<NlpExtractedEntityFrontend>;
   calculateRoute(payload: CalculateRoutePayloadFrontend): Promise<RouteCalculationFrontend>;
   submitReportFeedback(payload: SubmitFeedbackPayloadFrontend): Promise<FeedbackResultFrontend>;
+
+  getAssignedShipment(transportistaId: string): Promise<DispatchShipmentFrontend | null>;
+  updateShipmentStatus(id: string, nuevoEstado: 'RECOGIDO' | 'ENTREGADO'): Promise<DispatchShipmentFrontend>;
 
   getDisasters(): Promise<InfrastructureDesastre[]>;
   createDisaster(payload: Omit<InfrastructureDesastre, 'id'>): Promise<InfrastructureDesastre>;

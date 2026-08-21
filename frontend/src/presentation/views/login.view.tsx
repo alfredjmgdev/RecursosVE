@@ -24,6 +24,8 @@ export const LoginView: React.FC = () => {
       const lowerEmail = email.toLowerCase();
       if (lowerEmail.includes('donante')) {
         router.push('/donar');
+      } else if (lowerEmail.includes('transportista')) {
+        router.push('/transportista');
       } else {
         router.push('/');
       }
@@ -35,7 +37,7 @@ export const LoginView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md md:max-w-2xl mx-auto space-y-6 py-4">
+    <div className="max-w-md md:max-w-3xl mx-auto space-y-6 py-4">
       {/* Banner Header */}
       <div className="bg-gradient-to-r from-red-700 via-red-600 to-amber-600 border border-red-800 p-6 md:p-8 rounded-3xl shadow-xl text-center text-white">
         <div className="w-12 h-12 rounded-2xl bg-white text-red-600 mx-auto flex items-center justify-center font-black text-2xl shadow-lg mb-3">
@@ -53,7 +55,7 @@ export const LoginView: React.FC = () => {
         <div className="p-4 bg-red-50 border border-red-200 rounded-2xl text-red-800 text-xs md:text-sm font-bold flex items-center justify-between shadow-xs">
           <span>Sesión activa como: <strong>{currentUser.nombre}</strong> ({currentUser.rol})</span>
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push(currentUser.rol === 'TRANSPORTISTA' ? '/transportista' : '/')}
             className="px-3 py-1 bg-red-600 text-white font-black rounded-xl text-xs hover:bg-red-700 cursor-pointer shadow-sm"
           >
             Ir al Inicio
@@ -67,7 +69,7 @@ export const LoginView: React.FC = () => {
           Roles del Sistema y Niveles de Acceso:
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           {/* Card 1: Coordinador */}
           <div className="p-4 rounded-2xl border bg-white border-slate-200 shadow-md space-y-2">
             <div className="flex items-center justify-between">
@@ -78,25 +80,39 @@ export const LoginView: React.FC = () => {
             </div>
             <h4 className="font-extrabold text-slate-900 text-sm">Juan P.</h4>
             <p className="text-[11px] text-slate-500 font-medium">
-              Control total de campamento, mapa en vivo, IA de aprendizaje y gestión de brechas.
+              Control total de campamento, mapa en vivo y gestión de brechas.
             </p>
           </div>
 
-          {/* Card 2: Brigadista */}
+          {/* Card 2: Transportista */}
           <div className="p-4 rounded-2xl border bg-white border-slate-200 shadow-md space-y-2">
             <div className="flex items-center justify-between">
-              <Truck className="w-5 h-5 text-amber-600" />
+              <Truck className="w-5 h-5 text-cyan-600" />
+              <span className="text-[10px] font-black px-2 py-0.5 rounded bg-cyan-100 text-cyan-800 border border-cyan-300 uppercase">
+                Transportista
+              </span>
+            </div>
+            <h4 className="font-extrabold text-slate-900 text-sm">Carlos M.</h4>
+            <p className="text-[11px] text-slate-500 font-medium">
+              Despacho en terreno, mapa de 3 puntos y entrega de insumos.
+            </p>
+          </div>
+
+          {/* Card 3: Brigadista */}
+          <div className="p-4 rounded-2xl border bg-white border-slate-200 shadow-md space-y-2">
+            <div className="flex items-center justify-between">
+              <Shield className="w-5 h-5 text-amber-600" />
               <span className="text-[10px] font-black px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 uppercase">
                 Brigadista
               </span>
             </div>
             <h4 className="font-extrabold text-slate-900 text-sm">Pedro R.</h4>
             <p className="text-[11px] text-slate-500 font-medium">
-              Operación de campo, registro y reporte de necesidades críticas por zona.
+              Operación de campo y reporte de necesidades críticas.
             </p>
           </div>
 
-          {/* Card 3: Donante */}
+          {/* Card 4: Donante */}
           <div className="p-4 rounded-2xl border bg-white border-slate-200 shadow-md space-y-2">
             <div className="flex items-center justify-between">
               <HeartHandshake className="w-5 h-5 text-emerald-600" />
@@ -104,9 +120,9 @@ export const LoginView: React.FC = () => {
                 Donante
               </span>
             </div>
-            <h4 className="font-extrabold text-slate-900 text-sm">ONG Farmacéuticos</h4>
+            <h4 className="font-extrabold text-slate-900 text-sm">ONG Solidarios</h4>
             <p className="text-[11px] text-slate-500 font-medium">
-              Publicar ofertas dirigidas con Smart Matching y seguimiento de donaciones.
+              Publicar ofertas dirigidas con Smart Matching.
             </p>
           </div>
         </div>

@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, PlusCircle, HeartHandshake, BrainCircuit, LogOut, LogIn, HeartPulse, Globe } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, HeartHandshake, BrainCircuit, LogOut, LogIn, HeartPulse, Globe, Truck } from 'lucide-react';
 import { useRecursosVE } from '../../application/context/recursosve-context';
 import { UserRole } from '../../domain/entities/user.entity';
 
@@ -27,6 +27,7 @@ export const Header: React.FC = () => {
   const navItems = [
     { label: 'Seleccionar Estado', href: '/', icon: Globe, roles: [UserRole.COORDINADOR, UserRole.BRIGADISTA] },
     { label: 'Panel del Coordinador', href: dashboardHref, icon: LayoutDashboard, roles: [UserRole.COORDINADOR] },
+    { label: 'Misión del Transportista', href: '/transportista', icon: Truck, roles: [UserRole.TRANSPORTISTA] },
     { label: 'Reportar Necesidad', href: reportarHref, icon: PlusCircle, roles: [UserRole.COORDINADOR, UserRole.BRIGADISTA] },
     { label: 'Portal de Donantes', href: donarHref, icon: HeartHandshake, roles: [UserRole.COORDINADOR, UserRole.BRIGADISTA, UserRole.DONANTE] },
     { label: 'IA & Aprendizaje', href: '/aprendizaje', icon: BrainCircuit, roles: [UserRole.COORDINADOR] },
@@ -44,6 +45,8 @@ export const Header: React.FC = () => {
         return 'bg-amber-100 text-amber-800 border-amber-300 font-bold';
       case UserRole.DONANTE:
         return 'bg-emerald-100 text-emerald-800 border-emerald-300 font-bold';
+      case UserRole.TRANSPORTISTA:
+        return 'bg-cyan-100 text-cyan-800 border-cyan-300 font-bold';
       default:
         return 'bg-slate-100 text-slate-700 border-slate-300';
     }

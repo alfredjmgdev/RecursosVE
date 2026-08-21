@@ -13,6 +13,7 @@ import {
   RouteCalculationFrontend,
   SubmitFeedbackPayloadFrontend,
   FeedbackResultFrontend,
+  DispatchShipmentFrontend,
 } from '../../../domain/ports/api-client.port';
 import { GapAnalysisResult, ActionPlanType } from '../../../domain/entities/gap-analysis.entity';
 import { NeedReport, ReportStatus, ResourceCategory } from '../../../domain/entities/report.entity';
@@ -816,6 +817,64 @@ export class ApiClientAdapter implements ApiClientPort {
       resultado: payload.resultado,
       comentario: payload.comentario,
       createdAt: new Date().toISOString(),
+    };
+  }
+
+  async getAssignedShipment(transportistaId: string): Promise<DispatchShipmentFrontend | null> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/shipments/assigned/${transportistaId}`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // Fallback
+    }
+
+    return {
+      id: 'ship_demo_101',
+      donacionId: 'DON_9901',
+      reporteId: 'REP_LAGUAIRA_01',
+      transportistaId,
+      transportistaNombre: 'Carlos Mendoza (Chofer 4x4)',
+      vehiculoTipo: 'PICKUP_4X4',
+      ubicacionInicial: { lat: 10.605, lng: -66.94, nombre: 'Base Logística Catia La Mar' },
+      origen: { lat: 10.601, lng: -66.932, nombre: 'Centro de Acopio Puerto La Guaira' },
+      destino: { lat: 10.595, lng: -66.915, nombre: 'Refugio Carayaca Emergencia' },
+      estado: 'ASIGNADO',
+      insumoDescripcion: '500L Agua Potable & 20 Kits Médicos de Urgencia',
+      createdAt: new Date().toISOString(),
+    };
+  }
+
+  async updateShipmentStatus(id: string, nuevoEstado: 'RECOGIDO' | 'ENTREGADO'): Promise<DispatchShipmentFrontend> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/shipments/${id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ estado: nuevoEstado }),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // Fallback
+    }
+
+    return {
+      id,
+      donacionId: 'DON_9901',
+      reporteId: 'REP_LAGUAIRA_01',
+      transportistaId: 'usr_trans_4',
+      transportistaNombre: 'Carlos Mendoza (Chofer 4x4)',
+      vehiculoTipo: 'PICKUP_4X4',
+      ubicacionInicial: { lat: 10.605, lng: -66.94, nombre: 'Base Logística Catia La Mar' },
+      origen: { lat: 10.601, lng: -66.932, nombre: 'Centro de Acopio Puerto La Guaira' },
+      destino: { lat: 10.595, lng: -66.915, nombre: 'Refugio Carayaca Emergencia' },
+      estado: nuevoEstado,
+      insumoDescripcion: '500L Agua Potable & 20 Kits Médicos de Urgencia',
+      createdAt: new Date().toISOString(),
+      recogidoAt: nuevoEstado === 'RECOGIDO' || nuevoEstado === 'ENTREGADO' ? new Date().toISOString() : undefined,
+      entregadoAt: nuevoEstado === 'ENTREGADO' ? new Date().toISOString() : undefined,
     };
   }
 }
