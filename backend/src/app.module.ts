@@ -68,6 +68,7 @@ import { InfrastructureController } from './infrastructure/adapters/in/http/infr
 import { RoutesController } from './infrastructure/adapters/in/http/routes.controller';
 import { ShipmentsController } from './infrastructure/adapters/in/http/shipments.controller';
 import { UsersController } from './infrastructure/adapters/in/http/users.controller';
+import { RoleOrmEntity } from './infrastructure/adapters/out/persistence/postgres/entities/role.orm-entity';
 
 const ORM_ENTITIES = [
   NeedReportOrmEntity,
@@ -79,6 +80,7 @@ const ORM_ENTITIES = [
   ReportFeedbackOrmEntity,
   DispatchShipmentOrmEntity,
   UserOrmEntity,
+  RoleOrmEntity,
 ];
 
 @Module({

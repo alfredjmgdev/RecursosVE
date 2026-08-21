@@ -4,25 +4,52 @@ import { Repository } from 'typeorm';
 import { UserRepositoryPort, CreateUserData, UserWithPassword } from '../../../../../../domain/ports/out/user-repository.port';
 import { User, UserRole } from '../../../../../../domain/entities/user.entity';
 import { UserOrmEntity } from '../entities/user.orm-entity';
+import { RoleOrmEntity } from '../entities/role.orm-entity';
+
+const ROLE_MAP: Record<UserRole, { id: number; nombre: string }> = {
+  [UserRole.COORDINADOR]: { id: 1, nombre: 'Coordinador Logístico' },
+  [UserRole.BRIGADISTA]: { id: 2, nombre: 'Brigadista en Terreno' },
+  [UserRole.DONANTE]: { id: 3, nombre: 'Donante Aliado' },
+  [UserRole.TRANSPORTISTA]: { id: 4, nombre: 'Transportista Logístico' },
+};
 
 @Injectable()
 export class UserPostgresRepository implements UserRepositoryPort, OnModuleInit {
   constructor(
     @InjectRepository(UserOrmEntity)
     private readonly repo: Repository<UserOrmEntity>,
+    @InjectRepository(RoleOrmEntity)
+    private readonly roleRepo: Repository<RoleOrmEntity>,
   ) {}
 
   async onModuleInit() {
-    // Seed initial demo users into PostgreSQL if empty
+    // 1. Seed Roles table if empty
+    const roleCount = await this.roleRepo.count();
+    if (roleCount === 0) {
+      const rolesToSeed: Array<Partial<RoleOrmEntity>> = [
+        { id: 1, codigo: UserRole.COORDINADOR, nombre: 'Coordinador Logístico' },
+        { id: 2, codigo: UserRole.BRIGADISTA, nombre: 'Brigadista en Terreno' },
+        { id: 3, codigo: UserRole.DONANTE, nombre: 'Donante Aliado' },
+        { id: 4, codigo: UserRole.TRANSPORTISTA, nombre: 'Transportista Logístico' },
+      ];
+
+      for (const r of rolesToSeed) {
+        const roleEntity = this.roleRepo.create(r);
+        await this.roleRepo.save(roleEntity);
+      }
+      console.log('✅ Catálogo de roles sembrado exitosamente en PostgreSQL (tabla roles)');
+    }
+
+    // 2. Seed initial demo users into PostgreSQL if empty
     const count = await this.repo.count();
     if (count === 0) {
-      const initialUsers: Array<Partial<UserOrmEntity>> = [
+      const initialUsers = [
         {
           id: 'usr_coord_1',
           email: 'coordinador@recursosve.org',
           password: 'coord123',
           nombre: 'Juan P.',
-          rol: UserRole.COORDINADOR,
+          rolId: ROLE_MAP[UserRole.COORDINADOR].id,
           campamentoAsignado: 'Campamento La Guaira #12',
         },
         {
@@ -30,7 +57,7 @@ export class UserPostgresRepository implements UserRepositoryPort, OnModuleInit 
           email: 'brigadista@recursosve.org',
           password: 'briga123',
           nombre: 'Pedro R.',
-          rol: UserRole.BRIGADISTA,
+          rolId: ROLE_MAP[UserRole.BRIGADISTA].id,
           campamentoAsignado: 'Depósito Las Flores',
         },
         {
@@ -38,7 +65,7 @@ export class UserPostgresRepository implements UserRepositoryPort, OnModuleInit 
           email: 'donante@recursosve.org',
           password: 'donant123',
           nombre: 'ONG Farmacéuticos Solidarios',
-          rol: UserRole.DONANTE,
+          rolId: ROLE_MAP[UserRole.DONANTE].id,
           campamentoAsignado: null,
         },
         {
@@ -46,7 +73,7 @@ export class UserPostgresRepository implements UserRepositoryPort, OnModuleInit 
           email: 'transportista@recursosve.org',
           password: 'driver123',
           nombre: 'Carlos Mendoza (Chofer 4x4)',
-          rol: UserRole.TRANSPORTISTA,
+          rolId: ROLE_MAP[UserRole.TRANSPORTISTA].id,
           campamentoAsignado: null,
         },
         {
@@ -54,7 +81,7 @@ export class UserPostgresRepository implements UserRepositoryPort, OnModuleInit 
           email: 'transportista@recursos.ve',
           password: 'driver123',
           nombre: 'Carlos Mendoza (Chofer 4x4)',
-          rol: UserRole.TRANSPORTISTA,
+          rolId: ROLE_MAP[UserRole.TRANSPORTISTA].id,
           campamentoAsignado: null,
         },
       ];
@@ -63,7 +90,7 @@ export class UserPostgresRepository implements UserRepositoryPort, OnModuleInit 
         const entity = this.repo.create(userData);
         await this.repo.save(entity);
       }
-      console.log('✅ Usuarios iniciales sembrados exitosamente en PostgreSQL (tabla users)');
+      console.log('✅ Usuarios iniciales sembrados exitosamente en PostgreSQL (tabla users con FK rol_id)');
     }
   }
 
@@ -93,17 +120,21 @@ export class UserPostgresRepository implements UserRepositoryPort, OnModuleInit 
 
   async create(data: CreateUserData): Promise<User> {
     const newId = `usr_${Date.now()}`;
+    const rolInfo = ROLE_MAP[data.rol] || ROLE_MAP[UserRole.BRIGADISTA];
+
     const entity = this.repo.create({
       id: newId,
       email: data.email.toLowerCase(),
       password: data.password || '123456',
       nombre: data.nombre,
-      rol: data.rol,
+      rolId: rolInfo.id,
       campamentoAsignado: data.campamentoAsignado || null,
     });
 
     const saved = await this.repo.save(entity);
-    return saved.toDomain();
+    // Reload entity to fetch eager role relation
+    const reloaded = await this.repo.findOne({ where: { id: saved.id } });
+    return reloaded ? reloaded.toDomain() : saved.toDomain();
   }
 
   async delete(id: string): Promise<boolean> {

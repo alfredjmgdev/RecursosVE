@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 import { User, UserRole } from '../../../../../../domain/entities/user.entity';
+import { RoleOrmEntity } from './role.orm-entity';
 
 @Entity('users')
 export class UserOrmEntity {
@@ -15,11 +16,12 @@ export class UserOrmEntity {
   @Column({ type: 'varchar' })
   nombre: string;
 
-  @Column({
-    type: 'varchar',
-    default: UserRole.BRIGADISTA,
-  })
-  rol: UserRole;
+  @Column({ type: 'int', name: 'rol_id' })
+  rolId: number;
+
+  @ManyToOne(() => RoleOrmEntity, { eager: true })
+  @JoinColumn({ name: 'rol_id' })
+  role: RoleOrmEntity;
 
   @Column({ type: 'varchar', nullable: true, default: null })
   campamentoAsignado: string | null;
@@ -31,23 +33,13 @@ export class UserOrmEntity {
   updatedAt: Date;
 
   toDomain(): User {
+    const rolEnum = (this.role?.codigo as UserRole) || UserRole.BRIGADISTA;
     return new User(
       this.id,
       this.email,
       this.nombre,
-      this.rol,
+      rolEnum,
       this.campamentoAsignado || undefined,
     );
-  }
-
-  static fromDomain(domain: User, password?: string): UserOrmEntity {
-    const entity = new UserOrmEntity();
-    entity.id = domain.id;
-    entity.email = domain.email;
-    entity.password = password || '123456';
-    entity.nombre = domain.nombre;
-    entity.rol = domain.rol;
-    entity.campamentoAsignado = domain.campamentoAsignado || null;
-    return entity;
   }
 }
