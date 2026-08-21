@@ -12,5 +12,7 @@ export class User {
     public readonly nombre: string,
     public readonly rol: UserRole,
     public readonly campamentoAsignado?: string,
+    public readonly vehiculoTipo?: string,
+    public readonly vehiculoCapacidad?: string,
   ) {}
 }

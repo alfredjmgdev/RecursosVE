@@ -12,6 +12,8 @@ export interface CreateUserData {
   nombre: string;
   rol: UserRole;
   campamentoAsignado?: string;
+  vehiculoTipo?: string;
+  vehiculoCapacidad?: string;
 }
 
 export interface UserRepositoryPort {

@@ -23,6 +23,14 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   campamentoAsignado?: string;
+
+  @IsString()
+  @IsOptional()
+  vehiculoTipo?: string;
+
+  @IsString()
+  @IsOptional()
+  vehiculoCapacidad?: string;
 }
 
 @Controller('users')
@@ -50,6 +58,8 @@ export class UsersController {
       nombre: dto.nombre,
       rol: dto.rol,
       campamentoAsignado: dto.campamentoAsignado,
+      vehiculoTipo: dto.vehiculoTipo,
+      vehiculoCapacidad: dto.vehiculoCapacidad,
     });
   }
 

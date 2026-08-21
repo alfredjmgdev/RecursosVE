@@ -20,8 +20,14 @@ export class UserOrmEntity {
   @JoinColumn({ name: 'rol_id' })
   role: RoleOrmEntity;
 
-  @Column({ type: 'varchar', nullable: true, default: null })
+  @Column({ name: 'campamento_asignado', type: 'varchar', nullable: true, default: null })
   campamentoAsignado: string | null;
+
+  @Column({ name: 'vehiculo_tipo', type: 'varchar', nullable: true, default: null })
+  vehiculoTipo: string | null;
+
+  @Column({ name: 'vehiculo_capacidad', type: 'varchar', nullable: true, default: null })
+  vehiculoCapacidad: string | null;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -37,6 +43,8 @@ export class UserOrmEntity {
       this.nombre,
       rolEnum,
       this.campamentoAsignado || undefined,
+      this.vehiculoTipo || undefined,
+      this.vehiculoCapacidad || undefined,
     );
   }
 }

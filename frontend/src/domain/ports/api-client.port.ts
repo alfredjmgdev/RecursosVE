@@ -241,6 +241,8 @@ export interface UserFrontend {
   nombre: string;
   rol: UserRole;
   campamentoAsignado?: string;
+  vehiculoTipo?: string;
+  vehiculoCapacidad?: string;
 }
 
 export interface CreateUserPayloadFrontend {
@@ -249,4 +251,6 @@ export interface CreateUserPayloadFrontend {
   nombre: string;
   rol: UserRole;
   campamentoAsignado?: string;
+  vehiculoTipo?: string;
+  vehiculoCapacidad?: string;
 }

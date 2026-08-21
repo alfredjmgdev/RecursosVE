@@ -260,9 +260,17 @@ export const DriverDashboardView: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-800/80">
-                    <span className="text-slate-400">Vehículo Asignado:</span>
-                    <span className="font-semibold text-slate-200">{shipment.vehiculoTipo}</span>
+                  <div className="space-y-1 text-xs pt-2 border-t border-slate-800/80">
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-400">Vehículo Asignado:</span>
+                      <span className="font-semibold text-slate-200">{currentUser?.vehiculoTipo || shipment.vehiculoTipo}</span>
+                    </div>
+                    {currentUser?.vehiculoCapacidad && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-400">Capacidad Carga:</span>
+                        <span className="font-bold text-cyan-400">{currentUser.vehiculoCapacidad}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -362,9 +370,23 @@ export const DriverDashboardView: React.FC = () => {
                     Actualmente no tenés misiones activas asignadas. Tu unidad aparece como <strong className="text-emerald-400">DISPONIBLE</strong> en el mapa de control logístico.
                   </p>
                 </div>
-                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800/80 text-left space-y-1 text-xs">
-                  <span className="text-slate-400 block font-semibold">Chofer Autenticado:</span>
-                  <span className="text-white font-bold block">{currentUser?.nombre || 'Yorman Gutiérrez (Furgón Médico)'}</span>
+                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800/80 text-left space-y-2 text-xs">
+                  <div>
+                    <span className="text-slate-400 block font-semibold">Chofer Autenticado:</span>
+                    <span className="text-white font-bold block">{currentUser?.nombre || 'Yorman Gutiérrez'}</span>
+                  </div>
+                  {(currentUser?.vehiculoTipo || currentUser?.vehiculoCapacidad) && (
+                    <div className="pt-2 border-t border-slate-800/60 grid grid-cols-2 gap-2">
+                      <div>
+                        <span className="text-slate-400 block text-[10px]">Vehículo:</span>
+                        <span className="text-cyan-400 font-bold text-xs">{currentUser.vehiculoTipo || '—'}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block text-[10px]">Capacidad:</span>
+                        <span className="text-emerald-400 font-bold text-xs">{currentUser.vehiculoCapacidad || '—'}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

@@ -22,6 +22,8 @@ export const ManageUsersModalComponent: React.FC<ManageUsersModalProps> = ({ isO
   const [password, setPassword] = useState('');
   const [rol, setRol] = useState<UserRole>(UserRole.BRIGADISTA);
   const [campamentoAsignado, setCampamentoAsignado] = useState('');
+  const [vehiculoTipo, setVehiculoTipo] = useState('');
+  const [vehiculoCapacidad, setVehiculoCapacidad] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -47,6 +49,8 @@ export const ManageUsersModalComponent: React.FC<ManageUsersModalProps> = ({ isO
         password: password || '123456',
         rol,
         campamentoAsignado: campamentoAsignado.trim() || undefined,
+        vehiculoTipo: vehiculoTipo.trim() || undefined,
+        vehiculoCapacidad: vehiculoCapacidad.trim() || undefined,
       });
 
       setSuccessMsg(`¡Usuario "${nombre}" registrado exitosamente en PostgreSQL!`);
@@ -54,6 +58,8 @@ export const ManageUsersModalComponent: React.FC<ManageUsersModalProps> = ({ isO
       setEmail('');
       setPassword('');
       setCampamentoAsignado('');
+      setVehiculoTipo('');
+      setVehiculoCapacidad('');
       setActiveTab('list');
     } catch (err: any) {
       setErrorMsg(err.message || 'Error registrando el usuario.');
@@ -214,6 +220,7 @@ export const ManageUsersModalComponent: React.FC<ManageUsersModalProps> = ({ isO
                         <th className="px-4 py-3">Nombre</th>
                         <th className="px-4 py-3">Correo Electrónico</th>
                         <th className="px-4 py-3">Rol</th>
+                        <th className="px-4 py-3">Vehículo / Capacidad</th>
                         <th className="px-4 py-3">Campamento / Adscripción</th>
                         <th className="px-4 py-3 text-right">Acciones</th>
                       </tr>
@@ -232,6 +239,20 @@ export const ManageUsersModalComponent: React.FC<ManageUsersModalProps> = ({ isO
                               {getRoleIcon(u.rol)}
                               {u.rol}
                             </span>
+                          </td>
+                          <td className="px-4 py-3.5 text-slate-700 font-semibold">
+                            {u.vehiculoTipo ? (
+                              <div className="flex flex-col">
+                                <span className="font-extrabold text-slate-900">{u.vehiculoTipo}</span>
+                                {u.vehiculoCapacidad && (
+                                  <span className="text-[10px] text-cyan-700 font-bold bg-cyan-50 border border-cyan-200 px-1.5 py-0.5 rounded w-max mt-0.5">
+                                    📦 {u.vehiculoCapacidad}
+                                  </span>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="text-slate-400 font-normal">—</span>
+                            )}
                           </td>
                           <td className="px-4 py-3.5 text-slate-500 font-medium">
                             {u.campamentoAsignado || '—'}
@@ -349,6 +370,40 @@ export const ManageUsersModalComponent: React.FC<ManageUsersModalProps> = ({ isO
                   />
                 </div>
               </div>
+
+              {/* Campos específicos de Transportista */}
+              {rol === UserRole.TRANSPORTISTA && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-cyan-50/70 border border-cyan-200 rounded-2xl">
+                  <div>
+                    <label className="block text-xs font-bold text-cyan-900 mb-1 flex items-center gap-1">
+                      <Truck className="w-3.5 h-3.5 text-cyan-700" />
+                      Tipo / Modelo de Vehículo *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={vehiculoTipo}
+                      onChange={(e) => setVehiculoTipo(e.target.value)}
+                      placeholder="Ej: Pick-Up 4x4, Camión 350, Furgón"
+                      className="w-full bg-white border border-cyan-300 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-cyan-600"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-cyan-900 mb-1">
+                      Capacidad del Vehículo (Carga) *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={vehiculoCapacidad}
+                      onChange={(e) => setVehiculoCapacidad(e.target.value)}
+                      placeholder="Ej: 1.5 Toneladas, 500L Agua, 10T"
+                      className="w-full bg-white border border-cyan-300 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-cyan-600"
+                    />
+                  </div>
+                </div>
+              )}
 
               <div className="pt-2 flex justify-end gap-2">
                 <button

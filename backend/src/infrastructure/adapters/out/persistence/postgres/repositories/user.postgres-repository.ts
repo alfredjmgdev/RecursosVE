@@ -70,41 +70,51 @@ export class UserPostgresRepository implements UserRepositoryPort, OnModuleInit 
         id: 'usr_trans_4',
         email: 'transportista@recursosve.org',
         password: 'driver123',
-        nombre: 'Carlos Mendoza (Pick-Up 4x4)',
+        nombre: 'Carlos Mendoza',
         rolId: ROLE_MAP[UserRole.TRANSPORTISTA].id,
         campamentoAsignado: null,
+        vehiculoTipo: 'Pick-Up 4x4',
+        vehiculoCapacidad: '1.5 Toneladas (500L)',
       },
       {
         id: 'usr_trans_4_alt',
         email: 'transportista@recursos.ve',
         password: 'driver123',
-        nombre: 'Carlos Mendoza (Pick-Up 4x4)',
+        nombre: 'Carlos Mendoza',
         rolId: ROLE_MAP[UserRole.TRANSPORTISTA].id,
         campamentoAsignado: null,
+        vehiculoTipo: 'Pick-Up 4x4',
+        vehiculoCapacidad: '1.5 Toneladas (500L)',
       },
       {
         id: 'usr_trans_5',
         email: 'transportista2@recursosve.org',
         password: 'driver123',
-        nombre: 'María Briceño (Chuto 10T)',
+        nombre: 'María Briceño',
         rolId: ROLE_MAP[UserRole.TRANSPORTISTA].id,
         campamentoAsignado: null,
+        vehiculoTipo: 'Chuto 10T',
+        vehiculoCapacidad: '10 Toneladas',
       },
       {
         id: 'usr_trans_6',
         email: 'transportista3@recursosve.org',
         password: 'driver123',
-        nombre: 'Roberto "Tito" Silva (Camión 350)',
+        nombre: 'Roberto "Tito" Silva',
         rolId: ROLE_MAP[UserRole.TRANSPORTISTA].id,
         campamentoAsignado: null,
+        vehiculoTipo: 'Camión 350',
+        vehiculoCapacidad: '3.5 Toneladas',
       },
       {
         id: 'usr_trans_7',
         email: 'transportista4@recursosve.org',
         password: 'driver123',
-        nombre: 'Yorman Gutiérrez (Furgón Médico)',
+        nombre: 'Yorman Gutiérrez',
         rolId: ROLE_MAP[UserRole.TRANSPORTISTA].id,
         campamentoAsignado: null,
+        vehiculoTipo: 'Furgón Médico Refrigerado',
+        vehiculoCapacidad: '2.0 Toneladas (Cadena de Frío)',
       },
     ];
 
@@ -118,8 +128,15 @@ export class UserPostgresRepository implements UserRepositoryPort, OnModuleInit 
           nombre: userData.nombre,
           role: { id: userData.rolId } as RoleOrmEntity,
           campamentoAsignado: userData.campamentoAsignado,
+          vehiculoTipo: (userData as any).vehiculoTipo || null,
+          vehiculoCapacidad: (userData as any).vehiculoCapacidad || null,
         });
         await this.repo.save(entity);
+      } else {
+        existing.nombre = userData.nombre;
+        existing.vehiculoTipo = (userData as any).vehiculoTipo || null;
+        existing.vehiculoCapacidad = (userData as any).vehiculoCapacidad || null;
+        await this.repo.save(existing);
       }
     }
     console.log('✅ Usuarios semilla verificados/sembrados exitosamente en PostgreSQL (tabla users)');
@@ -160,6 +177,8 @@ export class UserPostgresRepository implements UserRepositoryPort, OnModuleInit 
       nombre: data.nombre,
       role: { id: rolInfo.id } as RoleOrmEntity,
       campamentoAsignado: data.campamentoAsignado || null,
+      vehiculoTipo: data.vehiculoTipo || null,
+      vehiculoCapacidad: data.vehiculoCapacidad || null,
     });
 
     const saved = await this.repo.save(entity);

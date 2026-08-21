@@ -5,12 +5,16 @@ export enum UserRole {
   TRANSPORTISTA = 'TRANSPORTISTA',
 }
 
-export interface User {
-  id: string;
-  email: string;
-  nombre: string;
-  rol: UserRole;
-  campamentoAsignado?: string;
+export class User {
+  constructor(
+    public readonly id: string,
+    public readonly email: string,
+    public readonly nombre: string,
+    public readonly rol: UserRole,
+    public readonly campamentoAsignado?: string,
+    public readonly vehiculoTipo?: string,
+    public readonly vehiculoCapacidad?: string,
+  ) {}
 }
 
 export interface AuthResultFrontend {

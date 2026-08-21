@@ -70,6 +70,9 @@ export class ApiClientAdapter implements ApiClientPort {
       let campamento: string | undefined = 'Campamento La Guaira #12';
 
       let userId = `usr_${Date.now()}`;
+      let vehiculoTipo: string | undefined;
+      let vehiculoCapacidad: string | undefined;
+
       if (lowerEmail.includes('donante')) {
         userRole = UserRole.DONANTE;
         userName = 'ONG Farmacéuticos Solidarios';
@@ -82,17 +85,25 @@ export class ApiClientAdapter implements ApiClientPort {
         userRole = UserRole.TRANSPORTISTA;
         campamento = undefined;
         if (lowerEmail.includes('4')) {
-          userName = 'Yorman Gutiérrez (Furgón Médico)';
+          userName = 'Yorman Gutiérrez';
           userId = 'usr_trans_7';
+          vehiculoTipo = 'Furgón Médico Refrigerado';
+          vehiculoCapacidad = '2.0 Toneladas (Cadena de Frío)';
         } else if (lowerEmail.includes('3')) {
-          userName = 'Roberto "Tito" Silva (Camión 350)';
+          userName = 'Roberto "Tito" Silva';
           userId = 'usr_trans_6';
+          vehiculoTipo = 'Camión 350';
+          vehiculoCapacidad = '3.5 Toneladas';
         } else if (lowerEmail.includes('2')) {
-          userName = 'María Briceño (Chuto 10T)';
+          userName = 'María Briceño';
           userId = 'usr_trans_5';
+          vehiculoTipo = 'Chuto 10T';
+          vehiculoCapacidad = '10 Toneladas';
         } else {
-          userName = 'Carlos Mendoza (Pick-Up 4x4)';
+          userName = 'Carlos Mendoza';
           userId = 'usr_trans_4';
+          vehiculoTipo = 'Pick-Up 4x4';
+          vehiculoCapacidad = '1.5 Toneladas (500L)';
         }
       }
 
@@ -103,6 +114,8 @@ export class ApiClientAdapter implements ApiClientPort {
           nombre: userName,
           rol: userRole,
           campamentoAsignado: campamento,
+          vehiculoTipo,
+          vehiculoCapacidad,
         },
         token: `token_mock_${Date.now()}`,
       };
@@ -926,8 +939,11 @@ export class ApiClientAdapter implements ApiClientPort {
       { id: 'usr_coord_1', email: 'coordinador@recursosve.org', nombre: 'Juan P.', rol: UserRole.COORDINADOR, campamentoAsignado: 'Campamento La Guaira #12' },
       { id: 'usr_brig_2', email: 'brigadista@recursosve.org', nombre: 'Pedro R.', rol: UserRole.BRIGADISTA, campamentoAsignado: 'Depósito Las Flores' },
       { id: 'usr_donante_3', email: 'donante@recursosve.org', nombre: 'ONG Farmacéuticos Solidarios', rol: UserRole.DONANTE },
-      { id: 'usr_trans_4', email: 'transportista@recursosve.org', nombre: 'Carlos Mendoza (Chofer 4x4)', rol: UserRole.TRANSPORTISTA },
-      { id: 'usr_trans_4_alt', email: 'transportista@recursos.ve', nombre: 'Carlos Mendoza (Chofer 4x4)', rol: UserRole.TRANSPORTISTA },
+      { id: 'usr_trans_4', email: 'transportista@recursosve.org', nombre: 'Carlos Mendoza', rol: UserRole.TRANSPORTISTA, vehiculoTipo: 'Pick-Up 4x4', vehiculoCapacidad: '1.5 Toneladas (500L)' },
+      { id: 'usr_trans_4_alt', email: 'transportista@recursos.ve', nombre: 'Carlos Mendoza', rol: UserRole.TRANSPORTISTA, vehiculoTipo: 'Pick-Up 4x4', vehiculoCapacidad: '1.5 Toneladas (500L)' },
+      { id: 'usr_trans_5', email: 'transportista2@recursosve.org', nombre: 'María Briceño', rol: UserRole.TRANSPORTISTA, vehiculoTipo: 'Chuto 10T', vehiculoCapacidad: '10 Toneladas' },
+      { id: 'usr_trans_6', email: 'transportista3@recursosve.org', nombre: 'Roberto "Tito" Silva', rol: UserRole.TRANSPORTISTA, vehiculoTipo: 'Camión 350', vehiculoCapacidad: '3.5 Toneladas' },
+      { id: 'usr_trans_7', email: 'transportista4@recursosve.org', nombre: 'Yorman Gutiérrez', rol: UserRole.TRANSPORTISTA, vehiculoTipo: 'Furgón Médico Refrigerado', vehiculoCapacidad: '2.0 Toneladas (Cadena de Frío)' },
     ];
   }
 
@@ -955,6 +971,8 @@ export class ApiClientAdapter implements ApiClientPort {
       nombre: payload.nombre,
       rol: payload.rol,
       campamentoAsignado: payload.campamentoAsignado,
+      vehiculoTipo: payload.vehiculoTipo,
+      vehiculoCapacidad: payload.vehiculoCapacidad,
     };
   }
 
