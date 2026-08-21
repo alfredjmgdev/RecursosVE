@@ -132,10 +132,10 @@ export const RouteMapModal: React.FC<RouteMapModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-700/80 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div className="bg-slate-900 border border-slate-700/80 rounded-2xl w-full max-w-5xl h-[80vh] min-h-[550px] max-h-[750px] flex flex-col shadow-2xl overflow-hidden">
         
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60 shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
               <Navigation className="w-6 h-6 animate-pulse" />
@@ -154,13 +154,13 @@ export const RouteMapModal: React.FC<RouteMapModalProps> = ({
         </div>
 
         {/* Content Body */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 overflow-hidden">
+        <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-3 overflow-hidden">
           
           {/* Left Panel - Route Details & Selector */}
-          <div className="p-5 border-r border-slate-800 bg-slate-900/80 flex flex-col gap-4 overflow-y-auto max-h-[500px] md:max-h-none">
+          <div className="p-5 border-r border-slate-800 bg-slate-900/80 flex flex-col gap-4 overflow-y-auto h-full">
             
             {/* Vehicle Selector */}
-            <div>
+            <div className="shrink-0">
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
                 Tipo de Vehículo Logístico
               </label>
@@ -177,14 +177,14 @@ export const RouteMapModal: React.FC<RouteMapModalProps> = ({
             </div>
 
             {loading ? (
-              <div className="py-12 flex flex-col items-center justify-center text-slate-400 gap-3">
+              <div className="flex-1 flex flex-col items-center justify-center text-slate-400 gap-3 min-h-[300px]">
                 <Navigation className="w-8 h-8 animate-spin text-cyan-400" />
-                <span className="text-sm">Calculando trayectoria óptima...</span>
+                <span className="text-sm font-semibold">Calculando trayectoria óptima...</span>
               </div>
             ) : routeResult ? (
-              <>
+              <div className="space-y-4 flex-1">
                 {/* Stats Cards */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3 shrink-0">
                   <div className="bg-slate-800/80 border border-slate-700/60 p-3 rounded-xl">
                     <span className="text-xs text-slate-400 block mb-1">Distancia Total</span>
                     <span className="text-xl font-black text-cyan-400">{routeResult.distanciaKm} km</span>
@@ -196,7 +196,7 @@ export const RouteMapModal: React.FC<RouteMapModalProps> = ({
                 </div>
 
                 {/* Risk Level Badge */}
-                <div className="bg-slate-800/80 border border-slate-700/60 p-3 rounded-xl flex items-center justify-between">
+                <div className="bg-slate-800/80 border border-slate-700/60 p-3 rounded-xl flex items-center justify-between shrink-0">
                   <span className="text-xs text-slate-400">Nivel de Riesgo Vial</span>
                   <span
                     className={`px-2.5 py-1 rounded-full text-xs font-bold ${
@@ -215,7 +215,7 @@ export const RouteMapModal: React.FC<RouteMapModalProps> = ({
 
                 {/* Alerts */}
                 {routeResult.alertasViales.length > 0 && (
-                  <div className="bg-amber-950/40 border border-amber-800/50 p-3 rounded-xl space-y-1">
+                  <div className="bg-amber-950/40 border border-amber-800/50 p-3 rounded-xl space-y-1 shrink-0">
                     <div className="flex items-center gap-1.5 text-amber-400 font-semibold text-xs mb-1">
                       <AlertTriangle className="w-4 h-4" />
                       <span>Alertas e Incidencias en la Ruta</span>
@@ -233,7 +233,7 @@ export const RouteMapModal: React.FC<RouteMapModalProps> = ({
                   <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
                     Hoja de Ruta ({routeResult.waypoints.length} Tramos)
                   </h4>
-                  <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
+                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                     {routeResult.waypoints.map((wp, i) => (
                       <div key={i} className="text-xs text-slate-300 bg-slate-800/40 p-2 rounded border border-slate-800 flex items-start gap-2">
                         <span className="text-cyan-400 font-mono font-bold">{i + 1}.</span>
@@ -242,13 +242,13 @@ export const RouteMapModal: React.FC<RouteMapModalProps> = ({
                     ))}
                   </div>
                 </div>
-              </>
+              </div>
             ) : null}
           </div>
 
           {/* Right Panel - Leaflet Interactive Map */}
-          <div className="md:col-span-2 relative min-h-[350px] bg-slate-950">
-            <div ref={mapContainerRef} className="w-full h-full min-h-[350px] z-10" />
+          <div className="md:col-span-2 relative h-full bg-slate-950">
+            <div ref={mapContainerRef} className="w-full h-full z-10" />
 
             {/* Floating Origin-Destination Banner */}
             <div className="absolute top-3 left-3 right-3 z-[400] bg-slate-900/90 border border-slate-700/80 backdrop-blur-md p-3 rounded-xl flex items-center justify-between text-xs text-slate-200 shadow-xl">
@@ -267,10 +267,10 @@ export const RouteMapModal: React.FC<RouteMapModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-slate-800 bg-slate-950 flex justify-end">
+        <div className="px-6 py-3 border-t border-slate-800 bg-slate-950 flex justify-end shrink-0">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm transition-colors"
+            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm font-semibold transition-colors"
           >
             Cerrar Visualizador
           </button>
