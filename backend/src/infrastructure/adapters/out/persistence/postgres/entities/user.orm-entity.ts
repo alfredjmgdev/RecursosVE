@@ -3,16 +3,16 @@ import { User, UserRole } from '../../../../../../domain/entities/user.entity';
 
 @Entity('users')
 export class UserOrmEntity {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: 'varchar' })
   id: string;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', unique: true })
   email: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   password: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   nombre: string;
 
   @Column({
@@ -21,7 +21,7 @@ export class UserOrmEntity {
   })
   rol: UserRole;
 
-  @Column({ nullable: true, default: null })
+  @Column({ type: 'varchar', nullable: true, default: null })
   campamentoAsignado: string | null;
 
   @CreateDateColumn()
