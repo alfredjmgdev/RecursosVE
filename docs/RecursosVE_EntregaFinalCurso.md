@@ -83,6 +83,7 @@ Diagramas UML del Proyecto
 Coordinador de Campamento: Registra refugio/acopio, reporta necesidades críticas, confirma recepción de ayuda.
 
 Donante / Voluntario: Consulta necesidades por Estado, ofrece donación dirigida, sigue el ticket de envío.
+Transportista (Logística de Campo): Visualiza la misión asignada por el Agente 3, consulta los datos tácticos de recogida/entrega y la capacidad técnica de su unidad (Pick-Up, Furgón Médico Refrigerado, Chuto, Camión 350), actualiza el estado a RECOGIDO y ENTREGADO, liberando automáticamente su disponibilidad.
 
 Agente Analizador / Coordinador IA: Calcula criticidad, asigna prioridad, empareja donación con brecha activa.
 
@@ -221,6 +222,14 @@ Figura 6. Evidencia Real de Ejecución y Respuesta de Ollama Local (SLM Vision)
 | Credenciales Rol Brigadista (Demo) | brigadista@recursosve.org / briga123 |
 
 | Credenciales Rol Donante (Demo) | donante@recursosve.org / donant123 |
+
+| Credenciales Rol Transportista 1 (Pick-Up 4x4 - 1.5T) | transportista@recursosve.org / driver123 (Carlos Mendoza) |
+
+| Credenciales Rol Transportista 2 (Chuto 10T - 10T) | transportista2@recursosve.org / driver123 (María Briceño) |
+
+| Credenciales Rol Transportista 3 (Camión 350 - 3.5T) | transportista3@recursosve.org / driver123 (Roberto "Tito" Silva) |
+
+| Credenciales Rol Transportista 4 (Furgón Médico - 2.0T Cold Chain) | transportista4@recursosve.org / driver123 (Yorman Gutiérrez) |
 
 
 ### Tabla 2
