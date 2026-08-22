@@ -93,6 +93,10 @@ Coordinador -> [Reporte Necesidad] -> Agente Captura -> [Event: NeedCreated] -> 
 
 ## 3. Diagrama de Clases / Entidades de Dominio:
 
+
+
+Figura 3b. Diagrama de Entidad-Relación (ER) — Base de Datos PostgreSQL de RecursosVE
+
 ## 4. Stack Tecnológico (Tabla Obligatoria)
 
 ## 5. Evidencia de Funcionamiento Real
@@ -105,44 +109,27 @@ Figura 3. Dashboard Principal del Centro de Mando Logístico con Mapa Real Leafl
 
 
 
+Figura 4. Pantalla de Autenticación y Selección de Rol con RBAC Estricto
+
+
+
+Figura 5. Portal del Donante, Catálogo de Insumos y Módulo de Emparejamiento Directo
+
+
+
+Figura 6. Formulario Único de Captura de Necesidades con Agente 1 (NLP Qwen2.5 / Checkbox Manual)
+
+
+
+Figura 7. Módulo de Registro y Gestión de Infraestructuras (Refugios, Acopios y Zonas de Desastre)
+
+Figura 3. Dashboard Principal del Centro de Mando Logístico con Mapa Real Leaflet y Zonas de Impacto
+
 Figura 4. Portal del Donante y Módulo de Emparejamiento Directo
-
-
 
 Figura 5. Módulo de Registro y Gestión de Infraestructuras con Teléfono y Responsable Desacoplados
 
-Log / Registro de Ejecución de una Sesión Real (Simulación Validada):
-
 ## 5.1 Resumen de Últimas Funcionalidades y Mejoras de Arquitectura Incorporadas
-
-Durante la fase final de consolidación del sistema RecursosVE, se incorporaron las siguientes mejoras clave de arquitectura, modelo de dominio y diseño UX/UI:
-
-1. Control de Acceso Manual (RBAC Estricto):
-Se eliminó el autocompletado automático de credenciales en los botones de roles de la pantalla de Login (/login). Las credenciales oficiales de prueba de cada rol (Coordinador: coordinador@recursosve.org / coord123, Brigadista: brigadista@recursosve.org / briga123, Donante: donante@recursosve.org / donant123, Transportista: transportista4@recursosve.org / driver123) se documentan explícitamente en este informe y requieren ingreso manual para validar el flujo real de autenticación.
-
-2. Persistencia End-to-End de Donaciones en Base de Datos:
-Se implementó la persistencia completa del ciclo de vida de la entidad DonationOffer. Las ofertas enviadas por los donantes se registran a través del servicio OfferDonationService y el repositorio DonationRepository de NestJS, garantizando la trazabilidad histórica de los insumos ofertados.
-
-3. Tabla y Catálogo de Donaciones en Tiempo Real:
-Se incorporó en el Portal del Donante (/donar) la Tabla de Donaciones Registradas en el Sistema, la cual sincroniza directamente vía GET /api/donations los datos persistidos en el backend, mostrando el ID de transacción, el donante, insumo, cantidad, ubicación de origen y el estado del despacho (OFERTADA, ASIGNADA, EN_TRANSITO, ENTREGADA).
-
-4. Información Táctica de Despacho e Instrucciones de Entrega:
-Al ser emparejada una donación mediante el algoritmo del Agente Coordinador, el resultado proporciona al donante el contacto telefónico directo del coordinador de campamento receptor y el punto exacto de entrega, asegurando transparencia logística total.
-
-5. Desacoplamiento y Persistencia de Atributos de Vehículos en PostgreSQL:
-Se migró la especificación de unidades de transporte (vehiculoTipo y vehiculoCapacidad) desde cadenas concatenadas en el nombre hacia columnas independientes y relacionales dentro de la tabla users en PostgreSQL. Se actualizaron las entidades User (Dominio) y UserOrmEntity (NestJS/TypeORM), permitiendo al algoritmo de ruteo del Agente 3 (Match Engine) evaluar la idoneidad y volumen del vehículo (ej. Furgón Médico Refrigerado de 2.0T con cadena de frío vs. Pick-Up 4x4 o Chuto 10T).
-
-6. Automatización del Ciclo de Vida del Transportista y FSM de Despachos:
-Se implementó la transición automática e inmediata del estado del transportista a DISPONIBLE al marcar un despacho como ENTREGADO. El backend (ManageShipmentService) actualiza la fecha de entrega y remueve el despacho entregado de la consulta de misiones activas (getAssignedShipment). La vista driver-dashboard.view.tsx resetea la sesión del despacho entregado a null, forzando la liberación inmediata del transportista para recibir nuevas asignaciones. En el mapa interactivo (Leaflet OSM), los transportistas en estado DISPONIBLE ocultan rutas o misiones finalizadas.
-
-7. Integración y Garantía de Sincronización de Roles (RBAC Sync):
-Se reforzó el bucle de sincronización en la inicialización del backend (UserPostgresRepository.onModuleInit()). Durante la siembra inicial, el sistema verifica y actualiza forzosamente el campo role (rol_id = 1 para Coordinador, rol_id = 2 para Brigadista, etc.) en los usuarios preexistentes de PostgreSQL, previniendo derivaciones incorrectas de rol en autenticación.
-
-8. Rediseño UX/UI del Formulario de Captura de Necesidades (Vista Única con Checkbox Táctico):
-Se refactorizó el formulario de creación de reportes (create-report-form.view.tsx), reemplazando el selector por pestañas (Agente 1 NLP vs Formulario Estructurado) por una vista única e integrada. Se incorporó la casilla [ ] Ingresar datos manualmente: desmarcada, despliega el asistente del Agente 1 (NLP Qwen2.5 local vía Ollama) para procesamiento inteligente de texto informal; marcada, colapsa el bloque de IA para permitir el llenado directo y rápido sin asistencia.
-
-9. Maquetación 2x2 y Jerarquía en el Centro de Mando del Coordinador:
-Se reorganizó la botonera del panel de control del coordinador (coordinator-dashboard.view.tsx) en una grilla compacta de 2x2 alineada a la derecha (ml-auto) con los accesos rápidos (Usuarios DB, Agente 3: Ruteo, Gestionar Registrados, + Registrar Infraestructura), optimizando la jerarquía visual y la ergonomía sin obstruir la visualización del mapa de desastres Leaflet.
 
 [SYSTEM_INIT] Backend NestJS conectado a PostgreSQL (Estado Activo: La Guaira ID=22)
 [AGENTE_CAPTURA] Event: NeedReportCreated -> ID: req_901 | Recurso: Agua Potable (500L) | Camp: Refugio La Guaira #1
@@ -152,8 +139,6 @@ Se reorganizó la botonera del panel de control del coordinador (coordinator-das
 [AGENTE_EVALUADOR] FSM Status Updated: NEED_REPORT #req_901 -> EN_TRANSITO (Timestamp: 2026-08-19T14:30:00Z)
 [AGENTE_EVALUADOR] Confirmación de Recepción por Coordinador (Cap. Rivas): FSM Status -> CUBIERTA (resolvedAt: 2026-08-19T15:12:00Z)
 [AGENTE_APRENDIZAJE] Métrica registrada: Tiempo de cobertura = 42 min | Tasa de resolución local incrementada a 42.5%
-
-## 6. Evaluación UX/UI y Heurísticas de Nielsen
 
 ## 6.1 Heurísticas de Nielsen Aplicadas al Proyecto (Tabla Evaluativa)
 
@@ -310,6 +295,8 @@ Figura 6. Evidencia Real de Ejecución y Respuesta de Ollama Local (SLM Vision)
 | Orquestación Agéntica | Event-Driven Architecture (EventEmitter / RxJS) | Desacoplamiento total entre los 5 agentes, permitiendo procesar eventos asíncronos de logística. |
 
 | Entorno & Despliegue | Docker Containerization / Node Environment | Reproducibilidad total del entorno de desarrollo y fácil despliegue en Vercel / Render / Cloud. |
+
+| IA Local (SLM) | Ollama + Qwen2.5 (7B) ejecutado en VPS | Procesamiento offline de texto informal de emergencia (Agente 1 NLP). Garantiza disponibilidad 100% sin internet, costo de token cero y privacidad de datos en campo. Modelo elegido por su excelente balance precisión/velocidad en tareas de extracción de entidades en español. |
 
 
 ### Tabla 6
