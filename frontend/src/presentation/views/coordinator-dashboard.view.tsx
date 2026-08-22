@@ -306,37 +306,37 @@ export const CoordinatorDashboardView: React.FC<CoordinatorDashboardViewProps> =
             </div>
           </div>
 
-          {/* Right Column: Action Buttons */}
-          <div className="relative z-10 flex flex-wrap items-center gap-3 shrink-0">
+          {/* Right Column: Action Buttons (2x2 Grid Aligned Right) */}
+          <div className="relative z-10 grid grid-cols-2 gap-2.5 shrink-0 ml-auto items-center">
             <button
               onClick={() => setIsUsersModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-black text-xs shadow-md hover:shadow-lg transition-all border border-slate-700 cursor-pointer"
+              className="flex items-center justify-center gap-2 px-3.5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-black text-xs shadow-md hover:shadow-lg transition-all border border-slate-700 cursor-pointer"
             >
-              <Users className="w-4 h-4 text-amber-400" />
+              <Users className="w-4 h-4 text-amber-400 shrink-0" />
               <span>👥 Usuarios DB</span>
             </button>
 
             <button
               onClick={() => setIsRouteModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-3 bg-cyan-950/80 hover:bg-cyan-900 text-cyan-200 rounded-2xl font-black text-xs shadow-md transition-all border border-cyan-700/50 cursor-pointer"
+              className="flex items-center justify-center gap-2 px-3.5 py-2.5 bg-cyan-950/80 hover:bg-cyan-900 text-cyan-200 rounded-2xl font-black text-xs shadow-md transition-all border border-cyan-700/50 cursor-pointer"
             >
-              <Navigation className="w-4 h-4 text-cyan-400 animate-pulse" />
+              <Navigation className="w-4 h-4 text-cyan-400 animate-pulse shrink-0" />
               <span>🛣️ Agente 3: Ruteo</span>
             </button>
 
             <button
               onClick={() => setIsManageModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-3 bg-white hover:bg-slate-50 text-slate-800 rounded-2xl font-black text-xs shadow-sm hover:shadow-md transition-all border-2 border-slate-200 hover:border-slate-300 cursor-pointer"
+              className="flex items-center justify-center gap-2 px-3.5 py-2.5 bg-white hover:bg-slate-50 text-slate-800 rounded-2xl font-black text-xs shadow-sm hover:shadow-md transition-all border-2 border-slate-200 hover:border-slate-300 cursor-pointer"
             >
-              <Settings2 className="w-4 h-4 text-amber-600" />
+              <Settings2 className="w-4 h-4 text-amber-600 shrink-0" />
               <span>Gestionar Registrados</span>
             </button>
 
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2.5 px-5 py-3 bg-gradient-to-r from-red-600 via-red-600 to-amber-600 hover:from-red-700 hover:to-amber-700 text-white rounded-2xl font-black text-xs shadow-lg shadow-red-600/25 hover:shadow-xl transition-all border border-red-500/30 cursor-pointer"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-600 via-red-600 to-amber-600 hover:from-red-700 hover:to-amber-700 text-white rounded-2xl font-black text-xs shadow-lg shadow-red-600/25 hover:shadow-xl transition-all border border-red-500/30 cursor-pointer"
             >
-              <PlusCircle className="w-4 h-4 text-amber-200" />
+              <PlusCircle className="w-4 h-4 text-amber-200 shrink-0" />
               <span>+ Registrar Infraestructura</span>
             </button>
           </div>
