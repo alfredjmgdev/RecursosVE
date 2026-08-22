@@ -8,7 +8,6 @@ build/
 # Generated Documents
 *.docx
 *.pdf
-RecursosVE_EntregaFinalCurso.*
 
 # Environment files
 .env
