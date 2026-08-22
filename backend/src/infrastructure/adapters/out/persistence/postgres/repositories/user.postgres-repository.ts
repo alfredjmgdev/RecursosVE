@@ -134,6 +134,9 @@ export class UserPostgresRepository implements UserRepositoryPort, OnModuleInit 
         await this.repo.save(entity);
       } else {
         existing.nombre = userData.nombre;
+        existing.password = userData.password;
+        existing.role = { id: userData.rolId } as RoleOrmEntity;
+        existing.campamentoAsignado = userData.campamentoAsignado;
         existing.vehiculoTipo = (userData as any).vehiculoTipo || null;
         existing.vehiculoCapacidad = (userData as any).vehiculoCapacidad || null;
         await this.repo.save(existing);
