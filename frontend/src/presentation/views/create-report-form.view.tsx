@@ -62,7 +62,7 @@ export const CreateReportFormView: React.FC<CreateReportFormViewProps> = ({ stat
     return stateCampamentos.length === 0 && stateAcopios.length === 0;
   }, [stateCampamentos, stateAcopios]);
 
-  const [inputMode, setInputMode] = useState<'NLP' | 'MANUAL'>('NLP');
+  const [isManualOnly, setIsManualOnly] = useState(false);
   const [nlpText, setNlpText] = useState(
     'Urgente en Campamento La Guaira: requerimos 50 cajas de agua potable y 30 dosis de insulina rápida para 5 niños y ancianos afectados'
   );
@@ -225,36 +225,27 @@ export const CreateReportFormView: React.FC<CreateReportFormViewProps> = ({ stat
           </div>
         )}
 
-        {/* Selector de Modo: Agente 1 (IA NLP) vs Manual */}
-        <div className="mb-6 flex p-1.5 bg-slate-100 rounded-2xl border border-slate-200 gap-1.5">
-          <button
-            type="button"
-            onClick={() => setInputMode('NLP')}
-            className={`flex-1 py-2.5 px-4 rounded-xl text-xs md:text-sm font-black flex items-center justify-center gap-2 transition-all ${
-              inputMode === 'NLP'
-                ? 'bg-gradient-to-r from-red-600 to-amber-600 text-white shadow-md'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <Bot className="w-4 h-4" />
-            🤖 Agente 1: Captura NLP (IA Ollama Local)
-          </button>
-          <button
-            type="button"
-            onClick={() => setInputMode('MANUAL')}
-            className={`flex-1 py-2.5 px-4 rounded-xl text-xs md:text-sm font-black flex items-center justify-center gap-2 transition-all ${
-              inputMode === 'MANUAL'
-                ? 'bg-slate-900 text-white shadow-md'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <FileText className="w-4 h-4" />
-            Formulario Estructurado (Manual)
-          </button>
+        {/* Control Unificado: Checkbox para Carga Manual vs Asistencia IA */}
+        <div className="mb-6 flex flex-wrap items-center justify-between p-3.5 bg-slate-50 border border-slate-200/90 rounded-2xl gap-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className={`w-4 h-4 ${!isManualOnly ? 'text-amber-600 animate-pulse' : 'text-slate-400'}`} />
+            <span className="text-xs font-bold text-slate-800">
+              {isManualOnly ? 'Modo Formulario Estructurado (Manual)' : 'Asistente de Captura IA (Agente 1 NLP)'}
+            </span>
+          </div>
+          <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer select-none bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs hover:bg-slate-100 transition-colors">
+            <input
+              type="checkbox"
+              checked={isManualOnly}
+              onChange={(e) => setIsManualOnly(e.target.checked)}
+              className="w-4 h-4 rounded border-slate-300 text-red-600 focus:ring-red-500 cursor-pointer"
+            />
+            <span>Ingresar datos manualmente</span>
+          </label>
         </div>
 
-        {/* Sección de Entradas del Agente 1 (NLP) */}
-        {inputMode === 'NLP' && (
+        {/* Sección de Entradas del Agente 1 (NLP) - Opcional según Checkbox */}
+        {!isManualOnly && (
           <div className="mb-6 p-5 bg-gradient-to-br from-amber-50/80 to-red-50/50 border border-amber-200 rounded-2xl space-y-3.5 shadow-sm">
             <div className="flex items-center justify-between">
               <label className="text-xs font-black uppercase tracking-wider text-amber-900 flex items-center gap-2">
