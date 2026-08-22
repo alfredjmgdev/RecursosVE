@@ -8,6 +8,11 @@ import { AuthGuard } from '../presentation/components/auth-guard';
 export const metadata: Metadata = {
   title: 'RecursosVE — Sistema Multiagente de Logística Humanitaria Inteligente',
   description: 'Optimizando la distribución de recursos en situaciones de desastre con agentes inteligentes y resiliencia offline.',
+  icons: {
+    icon: '/icon.png',
+    shortcut: '/favicon.ico',
+    apple: '/apple-icon.png',
+  },
 };
 
 export default function RootLayout({
